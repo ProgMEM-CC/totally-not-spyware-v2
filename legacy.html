@@ -148,7 +148,7 @@
         }
         
         .title {
-            font-size: 2.5em;
+            font-size: 1.8em;
             font-weight: bold;
             margin-bottom: 10px;
             color: #ff6b35;
@@ -164,6 +164,11 @@
             height: 48px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .title-text {
+            font-size: 0.9em;
+            line-height: 1.2;
         }
         
         .subtitle {
@@ -292,10 +297,15 @@
         .log-content {
             padding-top: 15px;
             transition: all 0.3s ease;
+            display: none;
         }
         
         .log-content.collapsed {
             display: none;
+        }
+        
+        .log-content.expanded {
+            display: block;
         }
         
         .log-toggle.collapsed {
@@ -483,6 +493,55 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+        
+        /* Custom DPI and Device-Specific Styles */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .title-logo {
+                width: 64px;
+                height: 64px;
+            }
+            
+            .button {
+                font-size: 20px;
+                padding: 20px 40px;
+            }
+            
+            .log-header h3 {
+                font-size: 28px;
+            }
+            
+            .log-entry {
+                font-size: 28px;
+            }
+        }
+        
+        @media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
+            .title-logo {
+                width: 72px;
+                height: 72px;
+            }
+            
+            .button {
+                font-size: 22px;
+                padding: 22px 44px;
+            }
+            
+            .log-header h3 {
+                font-size: 32px;
+            }
+            
+            .log-entry {
+                font-size: 32px;
+            }
+        }
+        
+        /* iOS Device-Specific Optimizations */
+        @supports (-webkit-touch-callout: none) {
+            .title-logo {
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+            }
+        }
     </style>
 </head>
 <body class="modern-theme">
@@ -490,8 +549,8 @@
     <div class="container">
         <div class="header">
             <div class="title">
-                <img src="/icons/icon-64x64.png" alt="TNS Logo" class="title-logo">
-                TotallyNotSpyware v2
+                <img src="/icons/TotallyNotSpyware.png" alt="TNS Logo" class="title-logo">
+                <span class="title-text">TotallyNotSpyware v2</span>
             </div>
             <div class="subtitle">(commit-99baa0b)</div>
             <div class="legacy-badge">Legacy Mode - iOS 12 Compatible</div>
@@ -528,9 +587,9 @@
         <div class="log-container">
             <div class="log-header" onclick="toggleLog()">
                 <h3>📋 Activity Log</h3>
-                <span class="log-toggle">▼</span>
+                <span class="log-toggle collapsed">▶</span>
             </div>
-            <div id="log" class="log-content"></div>
+            <div id="log" class="log-content collapsed"></div>
         </div>
         
         <div id="spoofing-tool" class="info-box" style="display: none;">
@@ -601,7 +660,7 @@
             if (readyStatus) readyStatus.innerHTML = '<span class="rainbow-text">YES</span>';
         }
         
-        var isLogCollapsed = false;
+        var isLogCollapsed = true;
         
         function toggleLog() {
             var logContent = document.getElementById('log');
@@ -610,10 +669,12 @@
             isLogCollapsed = !isLogCollapsed;
             
             if (isLogCollapsed) {
+                logContent.classList.remove('expanded');
                 logContent.classList.add('collapsed');
                 logToggle.classList.add('collapsed');
             } else {
                 logContent.classList.remove('collapsed');
+                logContent.classList.add('expanded');
                 logToggle.classList.remove('collapsed');
             }
         }

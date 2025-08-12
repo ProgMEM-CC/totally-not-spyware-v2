@@ -422,6 +422,25 @@
             color: #666;
             font-family: 'Courier New', monospace;
         }
+        
+        /* Rainbow Text Effect */
+        .rainbow-text {
+            background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #00ff00, #0080ff, #8000ff, #ff0080);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            font-size: 2em;
+            animation: rainbow-shift 3s ease-in-out infinite;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        @keyframes rainbow-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
     </style>
 </head>
 <body class="modern-theme">
@@ -442,12 +461,8 @@
         
         <div class="status-container">
             <div class="status-box">
-                <h3>🔌 WebSocket</h3>
-                <p id="ws-status">Disconnected</p>
-            </div>
-            <div class="status-box">
                 <h3>⚡ Ready</h3>
-                <p id="ready-status">No</p>
+                <p id="ready-status"><span class="rainbow-text">YES</span></p>
             </div>
         </div>
         
@@ -533,11 +548,9 @@
         var isReady = false;
         
         function updateStatus() {
-            var wsStatus = document.getElementById('ws-status');
             var readyStatus = document.getElementById('ready-status');
             
-            if (wsStatus) wsStatus.textContent = ws && ws.readyState === 1 ? 'Connected' : 'Disconnected';
-            if (readyStatus) readyStatus.textContent = isReady ? 'Yes' : 'No';
+            if (readyStatus) readyStatus.innerHTML = '<span class="rainbow-text">YES</span>';
         }
         
         function logMessage(message, type) {
@@ -564,57 +577,7 @@
             log.scrollTop = log.scrollHeight;
         }
         
-        function connectWebSocket() {
-            // Check if we're on a supported platform
-            var userAgent = navigator.userAgent;
-            var isIOS = /iPad|iPhone|iPod/i.test(userAgent);
-            var isWebKit = /WebKit/i.test(userAgent);
-            
-            if (!isIOS || !isWebKit) {
-                logMessage("Platform not supported: " + userAgent, "error");
-                logMessage("This exploit requires iOS WebKit browser", "info");
-                logMessage("WebSocket disabled for non-iOS platforms", "info");
-                updateStatus();
-                return;
-            }
-            
-            // For external access, use the current hostname
-            var protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            var host = window.location.hostname;
-            var wsUrl = protocol + '//' + host + ':8081/WebSocket';
-            
-            // Fallback for local testing
-            if (host === 'localhost' || host === '127.0.0.1') {
-                wsUrl = 'ws://localhost:8081/WebSocket';
-            }
-            
-            try {
-                ws = new WebSocket(wsUrl);
-                
-                ws.onopen = function() {
-                    ws.send("totally-not-spyware-v2");
-                    logMessage("WebSocket connected", "success");
-                    updateStatus();
-                };
-                
-                ws.onclose = function() {
-                    logMessage("WebSocket disconnected", "error");
-                    updateStatus();
-                };
-                
-                ws.onerror = function(error) {
-                    logMessage("WebSocket error: " + error, "error");
-                    updateStatus();
-                };
-                
-                ws.onmessage = function(event) {
-                    logMessage("Received: " + event.data, "info");
-                };
-                
-            } catch (error) {
-                logMessage("WebSocket connection failed: " + error.message, "error");
-            }
-        }
+
         
         function startJailbreak() {
             // Check platform compatibility first
@@ -870,14 +833,7 @@
         
         function initializeApp() {
             logMessage("App initialized (Legacy Mode)", "info");
-            connectWebSocket();
             checkStatus();
-            
-            setInterval(function() {
-                if (ws && ws.readyState === 1) {
-                    updateStatus();
-                }
-            }, 5000);
         }
         
         if ('serviceWorker' in navigator) {

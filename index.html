@@ -114,6 +114,25 @@
             color: var(--text-primary, #ffffff);
         }
         
+        /* Rainbow Text Effect */
+        .rainbow-text {
+            background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #00ff00, #0080ff, #8000ff, #ff0080);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            font-size: 2em;
+            animation: rainbow-shift 3s ease-in-out infinite;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        @keyframes rainbow-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
         .modern-theme .button {
             background: #ff6b6b; /* Fallback */
             background: var(--primary-color, #ff6b6b);
@@ -449,12 +468,8 @@
         
         <div class="status-container">
             <div class="status-box">
-                <h3>🔌 WebSocket</h3>
-                <p id="ws-status">Disconnected</p>
-            </div>
-            <div class="status-box">
                 <h3>⚡ Ready</h3>
-                <p id="ready-status">No</p>
+                <p id="ready-status"><span class="rainbow-text">YES</span></p>
             </div>
         </div>
         
@@ -525,12 +540,10 @@
     <script src="pwn.js"></script>
     
     <script>
-        let ws = null;
-        let isReady = false;
+        let isReady = true;
         
         function updateStatus() {
-            document.getElementById('ws-status').textContent = ws && ws.readyState === WebSocket.OPEN ? 'Connected' : 'Disconnected';
-            document.getElementById('ready-status').textContent = isReady ? 'Yes' : 'No';
+            document.getElementById('ready-status').innerHTML = '<span class="rainbow-text">YES</span>';
         }
         
         function logMessage(message, type = 'info') {
@@ -671,14 +684,7 @@
         
         function initializeApp() {
             logMessage("App initialized", "info");
-            connectWebSocket();
             checkStatus();
-            
-            setInterval(() => {
-                if (ws && ws.readyState === WebSocket.OPEN) {
-                    updateStatus();
-                }
-            }, 5000);
         }
         
         if ('serviceWorker' in navigator) {

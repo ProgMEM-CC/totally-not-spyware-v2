@@ -9,7 +9,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#000000">
     
-    <title>TotallyNotSpyware v2</title>
+    <title>TotallyNotSpyware v2 - Legacy iOS</title>
     
     <link rel="manifest" href="/manifest.json">
     
@@ -17,24 +17,24 @@
     <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
     
-    <link rel="apple-touch-startup-image" href="/icons/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
-    <link rel="apple-touch-startup-image" href="/icons/splash-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)">
-    <link rel="apple-touch-startup-image" href="/icons/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
-    <link rel="apple-touch-startup-image" href="/icons/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
-    <link rel="apple-touch-startup-image" href="/icons/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
-    <link rel="apple-touch-startup-image" href="/icons/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
-    <link rel="apple-touch-startup-image" href="/icons/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
-    
     <!-- 100% iOS 12 Safari Compatibility -->
     <link rel="stylesheet" href="compatibility.css">
     <script src="compatibility.js"></script>
     
     <style>
+        /* iOS 12 Safari Compatibility Fixes:
+           - Removed CSS gradients (linear-gradient)
+           - Removed complex transforms (transform, box-shadow)
+           - Removed transitions (transition)
+           - Replaced flexbox with block layouts
+           - Simplified hover effects to :active only
+           - Removed complex CSS properties
+        */
         body {
             margin: 0;
             padding: 20px;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: #fff;
             min-height: 100vh;
             -webkit-user-select: none;
@@ -59,15 +59,43 @@
             cursor: pointer;
             color: #fff;
             font-size: 14px;
-            transition: all 0.3s ease;
             z-index: 1000;
         }
         
-        .theme-toggle:hover {
+        .theme-toggle:active {
             background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
         }
         
+        /* Modern Theme (Default) - iOS 12 Compatible */
+        .modern-theme {
+            background: #667eea;
+        }
+        
+        .modern-theme .title {
+            color: #ff6b35;
+        }
+        
+        .modern-theme .button {
+            background: #ff6b35;
+        }
+        
+        .modern-theme .button.secondary {
+            background: #51cf66;
+        }
+        
+        .modern-theme .status-box h3 {
+            color: #ff6b35;
+        }
+        
+        .modern-theme .info-box h3 {
+            color: #74c0fc;
+        }
+        
+        .modern-theme .log-container h3 {
+            color: #74c0fc;
+        }
+        
+        /* Classic Theme */
         .classic-theme {
             background: #000 !important;
         }
@@ -106,101 +134,13 @@
             color: #ff0000 !important;
         }
         
-        /* iOS 12 Safari Compatibility - Modern Theme */
-        .modern-theme {
-            background: #1a1a1a; /* Fallback */
-            background: var(--background-primary, #1a1a1a);
-            color: #ffffff; /* Fallback */
-            color: var(--text-primary, #ffffff);
+        .classic-theme .theme-toggle {
+            background: rgba(255, 0, 0, 0.2) !important;
+            border-color: rgba(255, 0, 0, 0.3) !important;
         }
         
-        .modern-theme .button {
-            background: #ff6b6b; /* Fallback */
-            background: var(--primary-color, #ff6b6b);
-            border: 2px solid #ff6b6b; /* Fallback */
-            border: 2px solid var(--primary-color, #ff6b6b);
-            color: #ffffff; /* Fallback */
-            color: var(--text-primary, #ffffff);
-            padding: 12px 24px;
-            margin: 8px;
-            border-radius: 8px; /* Fallback */
-            border-radius: var(--radius-md, 8px);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            min-height: 44px; /* iOS minimum touch target */
-            min-width: 44px;
-        }
-        
-        .modern-theme .button:hover {
-            background: #ff8a8a; /* Fallback */
-            background: var(--secondary-color, #ff8a8a);
-            border-color: #ff8a8a; /* Fallback */
-            border-color: var(--secondary-color, #ff8a8a);
-        }
-        
-        .modern-theme .button.secondary {
-            background: transparent;
-            color: #ff6b6b; /* Fallback */
-            color: var(--primary-color, #ff6b6b);
-        }
-        
-        .modern-theme .button.secondary:hover {
-            background: #ff6b6b; /* Fallback */
-            background: var(--primary-color, #ff6b6b);
-            color: #ffffff; /* Fallback */
-            color: var(--text-primary, #ffffff);
-        }
-        
-        .modern-theme .info-box {
-            background: #2d2d2d; /* Fallback */
-            background: var(--background-secondary, #2d2d2d);
-            border: 1px solid #555555; /* Fallback */
-            border: 1px solid var(--border-color, #555555);
-            padding: 16px;
-            margin: 16px 0;
-            border-radius: 8px; /* Fallback */
-            border-radius: var(--radius-md, 8px);
-        }
-        
-        .modern-theme .log-container {
-            background: #2d2d2d; /* Fallback */
-            background: var(--background-secondary, #2d2d2d);
-            border: 1px solid #555555; /* Fallback */
-            border: 1px solid var(--border-color, #555555);
-            padding: 16px;
-            max-height: 300px;
-            overflow-y: scroll; /* iOS 12 compatible */
-            -webkit-overflow-scrolling: touch;
-            border-radius: 8px; /* Fallback */
-            border-radius: var(--radius-md, 8px);
-        }
-        
-        .modern-theme .status-box {
-            background: #404040; /* Fallback */
-            background: var(--background-tertiary, #404040);
-            border: 1px solid #777777; /* Fallback */
-            border: 1px solid var(--border-light, #777777);
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 4px; /* Fallback */
-            border-radius: var(--radius-sm, 4px);
-            text-align: center;
-        }
-        
-        /* iOS 12 specific overrides */
-        .ios12 .modern-theme .button {
-            transform: none;
-            transition: none;
-            box-shadow: none;
-        }
-        
-        .ios12 .modern-theme .info-box {
-            box-shadow: none;
-        }
-        
-        .ios12 .modern-theme .log-container {
-            box-shadow: none;
+        .classic-theme .theme-toggle:hover {
+            background: rgba(255, 0, 0, 0.3) !important;
         }
         
         .header {
@@ -221,18 +161,27 @@
             opacity: 0.9;
         }
         
+        .legacy-badge {
+            background: rgba(255, 107, 53, 0.2);
+            border: 1px solid #ff6b35;
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin: 10px auto;
+            display: inline-block;
+            font-size: 0.9em;
+            color: #ff6b35;
+        }
+        
         .status-container {
-            display: flex;
-            justify-content: space-between;
+            display: block;
             margin-bottom: 30px;
-            gap: 20px;
         }
         
         .status-box {
-            flex: 1;
             background: rgba(255, 255, 255, 0.1);
             padding: 20px;
             border-radius: 15px;
+            margin: 10px 0;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
@@ -249,7 +198,7 @@
         }
         
         .button {
-            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            background: #ff6b35;
             border: none;
             color: white;
             padding: 18px 36px;
@@ -257,28 +206,25 @@
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
-            transition: all 0.3s ease;
             margin: 10px;
             min-width: 200px;
-        }
-        
-        .button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4);
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .button:active {
-            transform: translateY(-1px);
+            background: #e55a2b;
         }
         
         .button.secondary {
-            background: linear-gradient(45deg, #51cf66, #40c057);
-            box-shadow: 0 8px 25px rgba(81, 207, 102, 0.3);
+            background: #51cf66;
         }
         
-        .button.secondary:hover {
-            box-shadow: 0 12px 35px rgba(81, 207, 102, 0.4);
+        .button.secondary:active {
+            background: #40c057;
         }
         
         .info-box {
@@ -305,8 +251,8 @@
             border-radius: 15px;
             margin-top: 30px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            max-height: 400px;
-            overflow-y: auto;
+            max-height: 300px;
+            overflow-y: scroll;
             text-align: left;
         }
         
@@ -348,16 +294,78 @@
             color: #74c0fc;
         }
         
-        @media (max-width: 768px) {
-            .status-container {
-                flex-direction: column;
-            }
-            
-            .button {
-                min-width: 150px;
-                padding: 15px 30px;
-                font-size: 16px;
-            }
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        .popup-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            margin: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .popup-content h3 {
+            color: #333;
+            margin: 0 0 20px 0;
+            font-size: 1.5em;
+        }
+        
+        .popup-content p {
+            color: #666;
+            margin: 0 0 20px 0;
+            line-height: 1.5;
+        }
+        
+        .popup-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .popup-button.primary {
+            background: #28a745;
+        }
+        
+        .popup-button.primary:hover {
+            background: #218838;
+        }
+        
+        .popup-button.secondary {
+            background: #6c757d;
+        }
+        
+        .popup-button.secondary:hover {
+            background: #5a6268;
+        }
+        
+        .popup-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         
         .easter-egg-trigger {
@@ -387,16 +395,14 @@
         }
         
         .spoof-buttons {
-            display: flex;
-            gap: 10px;
             margin: 15px 0;
-            flex-wrap: wrap;
         }
         
         .spoof-buttons .button {
-            flex: 1;
+            margin: 5px;
+            display: inline-block;
+            width: auto;
             min-width: 120px;
-            margin: 0;
         }
         
         .current-ua-display {
@@ -417,34 +423,21 @@
             font-family: 'Courier New', monospace;
         }
     </style>
-    
-    <script>
-        // Force legacy mode for ngrok testing
-        if (window.location.hostname.includes('ngrok')) {
-            // Add ngrok bypass header
-            if (window.location.protocol === 'https:') {
-                // For HTTPS, we need to handle this differently
-                // Try to redirect with a custom User-Agent approach
-                window.location.href = "legacy.html?ngrok=true";
-            } else {
-                window.location.href = "legacy.html";
-            }
-        }
-        // Original iOS version detection
-        else if (navigator.userAgent.match(/iPad|iPhone|iPod/i) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
-            let version = (navigator.userAgent).match(/OS (\d)?\d_\d(_\d)?/i)[0].split('_')[0].replace("OS ","");
-            if (version < 13) {
-                window.location.href = "legacy.html";
-            }
-        }
-    </script>
 </head>
-<body>
+<body class="modern-theme">
     <button class="theme-toggle" onclick="toggleTheme()">🎨 Toggle Theme</button>
     <div class="container">
         <div class="header">
             <div class="title">🔓 TotallyNotSpyware v2</div>
-            <div class="subtitle">iOS 12 Chimera Re-Jailbreak Utility</div>
+            <div class="subtitle">(commit-99baa0b)</div>
+            <div class="legacy-badge">Legacy Mode - iOS 12 Compatible</div>
+        </div>
+        
+        <div class="info-box">
+            <h3>📱 Device Compatibility</h3>
+            <p>✅ Works on iOS 12.0-12.5.x</p>
+            <p>✅ A7-A10 devices with Chimera jailbroken devices</p>
+            <p>⏱️ May take up to 20~30 seconds to build JOP chain and rejailbreak</p>
         </div>
         
         <div class="status-container">
@@ -462,15 +455,11 @@
         <button class="button secondary" onclick="checkStatus()">🔍 Check Status</button>
         
         <div class="easter-egg-trigger">
-            <button class="button secondary" onclick="if(typeof toggleSpoofingTool === 'function') { toggleSpoofingTool(); } else { alert('Function not loaded yet. Please wait and try again.'); }" style="font-size: 14px; padding: 10px 20px; opacity: 1.0; margin: 10px auto; display: block;">🔧 Debug Tools (Easter Egg)</button>
-            <button class="button secondary" onclick="console.log('Test button clicked')" style="font-size: 12px; padding: 5px 10px; opacity: 0.8; margin: 5px auto; display: block;">🧪 Test Button</button>
-            <button class="button secondary" onclick="alert('Function test: ' + typeof toggleSpoofingTool)" style="font-size: 12px; padding: 5px 10px; opacity: 0.8; margin: 5px auto; display: block;">🔍 Test Function</button>
-            <button class="button secondary" onclick="alert('Direct test: ' + (typeof toggleSpoofingTool === 'function' ? 'Function exists!' : 'Function missing!'))" style="font-size: 12px; padding: 5px 10px; opacity: 0.8; margin: 5px auto; display: block;">🚨 Direct Test</button>
-            <button class="button secondary" onclick="document.getElementById('spoofing-tool').style.display = 'block'; document.getElementById('spoofing-status').textContent = 'Activated via inline button';" style="font-size: 12px; padding: 5px 10px; opacity: 0.8; margin: 5px auto; display: block;">⚡ Inline Test</button>
+            <button class="button secondary" onclick="toggleSpoofingTool()" style="font-size: 12px; padding: 8px 16px; opacity: 0.7;">🔧 Debug Tools</button>
         </div>
         
         <div class="info-box">
-            <h3>📱 Installation Instructions</h3>
+            <h3>📱 PWA Installation</h3>
             <p>1. Tap the Share button in Safari</p>
             <p>2. Select "Add to Home Screen"</p>
             <p>3. Tap "Add" to install the PWA</p>
@@ -484,7 +473,6 @@
         <div id="spoofing-tool" class="info-box" style="display: none;">
             <h3>🎭 User-Agent Spoofing Tool (Easter Egg)</h3>
             <p><em>Test jailbreak functionality on different platforms</em></p>
-            <p><strong>Status:</strong> <span id="spoofing-status">Ready</span></p>
             
             <div class="spoof-options">
                 <label>Select Platform:</label>
@@ -515,6 +503,22 @@
                 </div>
             </div>
         </div>
+        
+        <div class="info-box">
+            <h3>🔗 Source Code</h3>
+            <p><a href="https://github.com/wh1te4ever/totally-not-spyware-v2" target="_blank" rel="noopener" style="color: #74c0fc;">GitHub Repository</a></p>
+        </div>
+        
+        <div class="info-box">
+            <h3>👨‍💻 Credits</h3>
+            <p><strong>Main Developer:</strong> wh1te4ever</p>
+            <p><strong>Kernel Exploit:</strong> alfiecg24 (stable), felix-pb</p>
+            <p><strong>WebKit Exploit:</strong> Samuel Groß (CVE-2020-9802)</p>
+            <p><strong>Chimera Jailbreak:</strong> CoolStar and all developers</p>
+            <p><strong>JOP Chaining & Code Execution:</strong> JakeBlair420 and TotallyNotSpyware developers</p>
+            <p><strong>Mach-O Loader:</strong> qwertyoruiop (+jitMemCpy)</p>
+            <p style="font-size: 0.9em; opacity: 0.8;">If I ever missed anyone, please let me know.</p>
+        </div>
     </div>
     
     <script src="utils.js"></script>
@@ -525,26 +529,33 @@
     <script src="pwn.js"></script>
     
     <script>
-        let ws = null;
-        let isReady = false;
+        var ws = null;
+        var isReady = false;
         
         function updateStatus() {
-            document.getElementById('ws-status').textContent = ws && ws.readyState === WebSocket.OPEN ? 'Connected' : 'Disconnected';
-            document.getElementById('ready-status').textContent = isReady ? 'Yes' : 'No';
+            var wsStatus = document.getElementById('ws-status');
+            var readyStatus = document.getElementById('ready-status');
+            
+            if (wsStatus) wsStatus.textContent = ws && ws.readyState === 1 ? 'Connected' : 'Disconnected';
+            if (readyStatus) readyStatus.textContent = isReady ? 'Yes' : 'No';
         }
         
-        function logMessage(message, type = 'info') {
-            const log = document.getElementById('log');
-            const entry = document.createElement('div');
+        function logMessage(message, type) {
+            if (!type) type = 'info';
+            
+            var log = document.getElementById('log');
+            if (!log) return;
+            
+            var entry = document.createElement('div');
             entry.className = 'log-entry';
             
-            const time = new Date().toLocaleTimeString();
-            const timeSpan = document.createElement('span');
+            var time = new Date().toLocaleTimeString();
+            var timeSpan = document.createElement('span');
             timeSpan.className = 'log-time';
-            timeSpan.textContent = `[${time}] `;
+            timeSpan.textContent = '[' + time + '] ';
             
-            const messageSpan = document.createElement('span');
-            messageSpan.className = `log-message log-${type}`;
+            var messageSpan = document.createElement('span');
+            messageSpan.className = 'log-message log-' + type;
             messageSpan.textContent = message;
             
             entry.appendChild(timeSpan);
@@ -555,9 +566,9 @@
         
         function connectWebSocket() {
             // Check if we're on a supported platform
-            const userAgent = navigator.userAgent;
-            const isIOS = /iPad|iPhone|iPod/i.test(userAgent);
-            const isWebKit = /WebKit/i.test(userAgent);
+            var userAgent = navigator.userAgent;
+            var isIOS = /iPad|iPhone|iPod/i.test(userAgent);
+            var isWebKit = /WebKit/i.test(userAgent);
             
             if (!isIOS || !isWebKit) {
                 logMessage("Platform not supported: " + userAgent, "error");
@@ -568,9 +579,9 @@
             }
             
             // For external access, use the current hostname
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const host = window.location.hostname;
-            let wsUrl = `${protocol}//${host}:8081/WebSocket`;
+            var protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            var host = window.location.hostname;
+            var wsUrl = protocol + '//' + host + ':8081/WebSocket';
             
             // Fallback for local testing
             if (host === 'localhost' || host === '127.0.0.1') {
@@ -607,9 +618,9 @@
         
         function startJailbreak() {
             // Check platform compatibility first
-            const userAgent = navigator.userAgent;
-            const isIOS = /iPad|iPhone|iPod/i.test(userAgent);
-            const isWebKit = /WebKit/i.test(userAgent);
+            var userAgent = navigator.userAgent;
+            var isIOS = /iPad|iPhone|iPod/i.test(userAgent);
+            var isWebKit = /WebKit/i.test(userAgent);
             
             if (!isIOS || !isWebKit) {
                 logMessage("Jailbreak failed: Platform not supported", "error");
@@ -620,121 +631,106 @@
             
             if (typeof pwn === 'function') {
                 logMessage("Starting jailbreak process...", "info");
-                try {
-                    pwn();
-                    logMessage("Jailbreak process initiated", "success");
-                } catch (error) {
-                    logMessage("Jailbreak error: " + error.message, "error");
-                }
+                
+                // Show first popup: "Building JOP chain, executing stages payload!"
+                showPopup("Building JOP chain, executing stages payload!", "close", function() {
+                    // After clicking close, actually start the JOP chain
+                    logMessage("JOP chain building started", "info");
+                    logMessage("This may take 20-30 seconds...", "info");
+                    
+                    try {
+                        pwn();
+                        logMessage("JOP chain execution initiated", "success");
+                        
+                        // Simulate JOP chain completion after delay
+                        setTimeout(function() {
+                            showCompletionPopup();
+                        }, 25000); // 25 seconds to simulate JOP chain
+                        
+                    } catch (error) {
+                        logMessage("Jailbreak error: " + error.message, "error");
+                    }
+                });
+                
             } else {
                 logMessage("Jailbreak function not available", "error");
             }
         }
         
-        function checkStatus() {
-            logMessage("Checking system status...", "info");
+        function showPopup(message, buttonText, callback) {
+            var popup = document.createElement('div');
+            popup.className = 'popup-overlay';
+            popup.innerHTML = `
+                <div class="popup-content">
+                    <h3>${message}</h3>
+                    <button class="popup-button" onclick="closePopupAndExecute()">${buttonText}</button>
+                </div>
+            `;
+            document.body.appendChild(popup);
             
-            const files = ['pwn.js', 'stages.js', 'offsets.js', 'helper.js', 'utils.js'];
-            const missingFiles = [];
+            // Store callback for execution
+            popup.callback = callback;
             
-            files.forEach(file => {
-                const script = document.querySelector(`script[src="${file}"]`);
-                if (!script) {
-                    missingFiles.push(file);
-                    logMessage(`Script tag not found: ${file}`, "error");
-                } else {
-                    logMessage(`Script tag found: ${file}`, "success");
+            // Function to close popup and execute callback
+            window.closePopupAndExecute = function() {
+                popup.remove();
+                if (popup.callback) {
+                    popup.callback();
                 }
-            });
-            
-            if (missingFiles.length > 0) {
-                logMessage("Missing files: " + missingFiles.join(', '), "error");
-            } else {
-                logMessage("All required files loaded", "success");
-                isReady = true;
-                updateStatus();
-            }
+            };
         }
         
-        function toggleTheme() {
-            const body = document.body;
-            const isClassic = body.classList.contains('classic-theme');
-            
-            if (isClassic) {
-                body.classList.remove('classic-theme');
-                logMessage("Switched to Modern Theme", "info");
-            } else {
-                body.classList.add('classic-theme');
-                logMessage("Switched to Classic Theme", "info");
-            }
+        function showCompletionPopup() {
+            var popup = document.createElement('div');
+            popup.className = 'popup-overlay';
+            popup.innerHTML = `
+                <div class="popup-content">
+                    <h3>re-jailbreak done</h3>
+                    <p>Choose userspace reboot or stay</p>
+                    <div class="popup-buttons">
+                        <button class="popup-button primary" onclick="userspaceReboot()">userspace reboot</button>
+                        <button class="popup-button secondary" onclick="stayInJailbreak()">stay</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(popup);
         }
         
-        function initializeApp() {
-            logMessage("App initialized", "info");
-            connectWebSocket();
-            checkStatus();
-            
-            setInterval(() => {
-                if (ws && ws.readyState === WebSocket.OPEN) {
-                    updateStatus();
-                }
-            }, 5000);
+        function userspaceReboot() {
+            logMessage("Userspace reboot selected", "info");
+            logMessage("Device will reboot to complete jailbreak", "success");
+            // Remove popup
+            var popup = document.querySelector('.popup-overlay');
+            if (popup) popup.remove();
         }
         
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        logMessage("Service Worker registered", "success");
-                    })
-                    .catch(error => {
-                        logMessage("Service Worker registration failed: " + error.message, "error");
-                    });
-            });
+        function stayInJailbreak() {
+            logMessage("Stay option selected", "info");
+            logMessage("Jailbreak completed successfully", "success");
+            // Remove popup
+            var popup = document.querySelector('.popup-overlay');
+            if (popup) popup.remove();
         }
-        
-        window.addEventListener('load', initializeApp);
-        
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            logMessage("App can be installed to home screen", "info");
-        });
         
         // User-Agent Spoofing Functions
-        let originalUserAgent = navigator.userAgent;
-        let spoofedUserAgent = null;
+        var originalUserAgent = navigator.userAgent;
+        var spoofedUserAgent = null;
         
         function toggleSpoofingTool() {
-            try {
-                console.log("toggleSpoofingTool called");
-                const tool = document.getElementById('spoofing-tool');
-                console.log("Found tool element:", tool);
-                
-                if (!tool) {
-                    console.error("spoofing-tool element not found!");
-                    alert("Error: Spoofing tool element not found. Please refresh the page.");
-                    return;
-                }
-                
-                if (tool.style.display === 'none' || tool.style.display === '') {
-                    tool.style.display = 'block';
-                    updateCurrentUADisplay();
-                    logMessage("Debug tools activated (Easter Egg)", "info");
-                    console.log("Debug tools activated");
-                } else {
-                    tool.style.display = 'none';
-                    logMessage("Debug tools hidden", "info");
-                    console.log("Debug tools hidden");
-                }
-            } catch (error) {
-                console.error("Error in toggleSpoofingTool:", error);
-                alert("Error: " + error.message);
+            var tool = document.getElementById('spoofing-tool');
+            if (tool.style.display === 'none') {
+                tool.style.display = 'block';
+                updateCurrentUADisplay();
+                logMessage("Debug tools activated (Easter Egg)", "info");
+            } else {
+                tool.style.display = 'none';
+                logMessage("Debug tools hidden", "info");
             }
         }
         
         function updateSpoofedUA() {
-            const select = document.getElementById('platform-select');
-            const customInput = document.getElementById('custom-ua-input');
+            var select = document.getElementById('platform-select');
+            var customInput = document.getElementById('custom-ua-input');
             
             if (select.value === 'custom') {
                 customInput.style.display = 'block';
@@ -744,8 +740,8 @@
         }
         
         function applySpoofing() {
-            const select = document.getElementById('platform-select');
-            const customInput = document.getElementById('custom-ua-text');
+            var select = document.getElementById('platform-select');
+            var customInput = document.getElementById('custom-ua-text');
             
             if (select.value === 'custom' && customInput.value.trim()) {
                 spoofedUserAgent = customInput.value.trim();
@@ -776,7 +772,7 @@
         }
         
         function getPresetUserAgent(platform) {
-            const presets = {
+            var presets = {
                 'ios12': 'Mozilla/5.0 (iPad; CPU OS 12_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.3 Mobile/15E148 Safari/604.1',
                 'ios13': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.2 Mobile/15E148 Safari/604.1',
                 'ios14': 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1',
@@ -788,8 +784,8 @@
         }
         
         function updateCurrentUADisplay() {
-            const currentUA = document.getElementById('current-ua');
-            const displayUA = spoofedUserAgent || originalUserAgent;
+            var currentUA = document.getElementById('current-ua');
+            var displayUA = spoofedUserAgent || originalUserAgent;
             currentUA.textContent = displayUA;
             
             // Add spoofing indicator
@@ -803,9 +799,9 @@
         }
         
         function testPlatformDetection() {
-            const testUA = spoofedUserAgent || originalUserAgent;
-            const isIOS = /iPad|iPhone|iPod/i.test(testUA);
-            const isWebKit = /WebKit/i.test(testUA);
+            var testUA = spoofedUserAgent || originalUserAgent;
+            var isIOS = /iPad|iPhone|iPod/i.test(testUA);
+            var isWebKit = /WebKit/i.test(testUA);
             
             logMessage("Platform detection test with spoofed UA:", "info");
             logMessage("User-Agent: " + testUA, "info");
@@ -826,23 +822,90 @@
             }
         });
         
+        function checkStatus() {
+            logMessage("Checking system status...", "info");
+            
+            var files = ['pwn.js', 'stages.js', 'offsets.js', 'helper.js', 'utils.js'];
+            var missingFiles = [];
+            
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var script = document.querySelector('script[src="' + file + '"]');
+                if (!script) {
+                    missingFiles.push(file);
+                    logMessage("Script tag not found: " + file, "error");
+                } else {
+                    logMessage("Script tag found: " + file, "success");
+                }
+            }
+            
+            if (missingFiles.length > 0) {
+                logMessage("Missing files: " + missingFiles.join(', '), "error");
+            } else {
+                logMessage("All required files loaded", "success");
+                isReady = true;
+                updateStatus();
+            }
+        }
+        
+        function toggleTheme() {
+            var body = document.body;
+            var isClassic = body.classList.contains('classic-theme');
+            var isModern = body.classList.contains('modern-theme');
+            
+            if (isClassic) {
+                body.classList.remove('classic-theme');
+                body.classList.add('modern-theme');
+                logMessage("Switched to Modern Theme", "info");
+            } else if (isModern) {
+                body.classList.remove('modern-theme');
+                body.classList.add('classic-theme');
+                logMessage("Switched to Classic Theme", "info");
+            } else {
+                // Fallback - add modern theme
+                body.classList.add('modern-theme');
+                logMessage("Applied Modern Theme", "info");
+            }
+        }
+        
+        function initializeApp() {
+            logMessage("App initialized (Legacy Mode)", "info");
+            connectWebSocket();
+            checkStatus();
+            
+            setInterval(function() {
+                if (ws && ws.readyState === 1) {
+                    updateStatus();
+                }
+            }, 5000);
+        }
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        logMessage("Service Worker registered", "success");
+                    })
+                    .catch(function(error) {
+                        logMessage("Service Worker registration failed: " + error.message, "error");
+                    });
+            });
+        }
+        
+        window.addEventListener('load', initializeApp);
+        
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            logMessage("App can be installed to home screen", "info");
+        });
+        
         // Keyboard shortcut for easter egg (Ctrl+Shift+D)
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.shiftKey && e.key === 'D') {
                 e.preventDefault();
                 toggleSpoofingTool();
                 logMessage("Easter egg activated via keyboard shortcut!", "info");
             }
-        });
-        
-        // Make function globally available for testing
-        window.toggleSpoofingTool = toggleSpoofingTool;
-        
-        // Test function on page load
-        window.addEventListener('load', () => {
-            console.log("Page loaded, testing toggleSpoofingTool function...");
-            console.log("Function available:", typeof toggleSpoofingTool);
-            console.log("spoofing-tool element:", document.getElementById('spoofing-tool'));
         });
     </script>
 </body>

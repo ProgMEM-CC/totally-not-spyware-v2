@@ -30,6 +30,11 @@
     <script src="compatibility.js"></script>
     
     <style>
+        /* 
+         * TNS v2 - Original Modern Theme
+         * This is the current beautiful purple gradient theme
+         * Keep this as an alternative option when we add quirky themes
+         */
         body {
             margin: 0;
             padding: 20px;
@@ -48,10 +53,17 @@
             text-align: center;
         }
         
-        .theme-toggle {
+        .theme-controls {
             position: fixed;
             top: 20px;
             right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .theme-toggle, .theme-selector {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 25px;
@@ -60,7 +72,17 @@
             color: #fff;
             font-size: 14px;
             transition: all 0.3s ease;
-            z-index: 1000;
+            white-space: nowrap;
+        }
+        
+        .theme-selector {
+            background: rgba(255, 107, 53, 0.3);
+            border-color: rgba(255, 107, 53, 0.5);
+        }
+        
+        .theme-selector:hover {
+            background: rgba(255, 107, 53, 0.5);
+            transform: scale(1.05);
         }
         
         .theme-toggle:hover {
@@ -104,6 +126,71 @@
         
         .classic-theme .log-container h3 {
             color: #ff0000 !important;
+        }
+        
+        /* Quirky Theme - More like the original jbme */
+        .quirky-theme {
+            background: #000 !important;
+        }
+        
+        .quirky-theme .title {
+            color: #00ff00 !important;
+            text-shadow: 0 0 10px #00ff00 !important;
+            font-family: 'Courier New', monospace !important;
+        }
+        
+        .quirky-theme .subtitle {
+            color: #00ff00 !important;
+            font-family: 'Courier New', monospace !important;
+        }
+        
+        .quirky-theme .button {
+            background: #00ff00 !important;
+            color: #000 !important;
+            border: 2px solid #00ff00 !important;
+            font-family: 'Courier New', monospace !important;
+            font-weight: bold !important;
+            text-transform: uppercase !important;
+            letter-spacing: 2px !important;
+        }
+        
+        .quirky-theme .button:hover {
+            background: #00cc00 !important;
+            box-shadow: 0 0 20px #00ff00 !important;
+        }
+        
+        .quirky-theme .status-box {
+            background: #111 !important;
+            border: 2px solid #00ff00 !important;
+        }
+        
+        .quirky-theme .status-box h3 {
+            color: #00ff00 !important;
+            font-family: 'Courier New', monospace !important;
+        }
+        
+        .quirky-theme .info-box {
+            background: #111 !important;
+            border: 2px solid #00ff00 !important;
+        }
+        
+        .quirky-theme .info-box h3 {
+            color: #00ff00 !important;
+            font-family: 'Courier New', monospace !important;
+        }
+        
+        .quirky-theme .log-container {
+            background: #111 !important;
+            border: 2px solid #00ff00 !important;
+        }
+        
+        .quirky-theme .log-header h3 {
+            color: #00ff00 !important;
+            font-family: 'Courier New', monospace !important;
+        }
+        
+        .quirky-theme .log-toggle {
+            color: #00ff00 !important;
         }
         
         /* iOS 12 Safari Compatibility - Modern Theme */
@@ -232,6 +319,17 @@
             margin-bottom: 10px;
             color: #ff6b35;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .title-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         
         .subtitle {
@@ -329,17 +427,48 @@
             text-align: left;
         }
         
-        .log-container h3 {
-            margin: 0 0 15px 0;
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .log-header h3 {
+            margin: 0;
             color: #74c0fc;
-            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .log-toggle {
+            font-size: 20px;
+            color: #74c0fc;
+            transition: transform 0.3s ease;
+        }
+        
+        .log-content {
+            padding-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .log-content.collapsed {
+            display: none;
+        }
+        
+        .log-toggle.collapsed {
+            transform: rotate(-90deg);
         }
         
         .log-entry {
             padding: 8px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1.4;
         }
         
         .log-entry:last-child {
@@ -459,10 +588,17 @@
     </script>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()">🎨 Toggle Theme</button>
+    <div class="theme-controls">
+        <button class="theme-toggle" onclick="toggleTheme()">🎨 Toggle Theme</button>
+        <button class="theme-selector" onclick="selectTheme('modern')">🌟 Original Modern</button>
+        <button class="theme-selector" onclick="selectTheme('quirky')">🎭 Quirky Mode</button>
+    </div>
     <div class="container">
         <div class="header">
-            <div class="title">🔓 TotallyNotSpyware v2</div>
+            <div class="title">
+                <img src="/icons/icon-64x64.png" alt="TNS Logo" class="title-logo">
+                TotallyNotSpyware v2
+            </div>
             <div class="subtitle">iOS 12 Chimera Re-Jailbreak Utility</div>
         </div>
         
@@ -492,8 +628,11 @@
         </div>
         
         <div class="log-container">
-            <h3>📋 Activity Log</h3>
-            <div id="log"></div>
+            <div class="log-header" onclick="toggleLog()">
+                <h3>📋 Activity Log</h3>
+                <span class="log-toggle">▼</span>
+            </div>
+            <div id="log" class="log-content"></div>
         </div>
         
         <div id="spoofing-tool" class="info-box" style="display: none;">
@@ -544,6 +683,23 @@
         
         function updateStatus() {
             document.getElementById('ready-status').innerHTML = '<span class="rainbow-text">YES</span>';
+        }
+        
+        let isLogCollapsed = false;
+        
+        function toggleLog() {
+            const logContent = document.getElementById('log');
+            const logToggle = document.querySelector('.log-toggle');
+            
+            isLogCollapsed = !isLogCollapsed;
+            
+            if (isLogCollapsed) {
+                logContent.classList.add('collapsed');
+                logToggle.classList.add('collapsed');
+            } else {
+                logContent.classList.remove('collapsed');
+                logToggle.classList.remove('collapsed');
+            }
         }
         
         function logMessage(message, type = 'info') {
@@ -679,6 +835,20 @@
             } else {
                 body.classList.add('classic-theme');
                 logMessage("Switched to Classic Theme", "info");
+            }
+        }
+        
+        function selectTheme(theme) {
+            const body = document.body;
+            
+            // Remove all theme classes
+            body.classList.remove('classic-theme', 'quirky-theme');
+            
+            if (theme === 'quirky') {
+                body.classList.add('quirky-theme');
+                logMessage("Switched to Quirky Theme", "info");
+            } else {
+                logMessage("Switched to Original Modern Theme", "info");
             }
         }
         

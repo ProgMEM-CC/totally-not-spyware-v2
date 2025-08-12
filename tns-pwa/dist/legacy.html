@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TNSv2">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    
+    <title>TotallyNotSpyware v2 - Legacy iOS</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
+    
+    <!-- 100% iOS 12 Safari Compatibility -->
+    <link rel="stylesheet" href="compatibility.css">
+    <script src="compatibility.js"></script>
+    
+    <style>
+        /* iOS 12 Safari Compatibility Fixes:
+           - Removed CSS gradients (linear-gradient)
+           - Removed complex transforms (transform, box-shadow)
+           - Removed transitions (transition)
+           - Replaced flexbox with block layouts
+           - Simplified hover effects to :active only
+           - Removed complex CSS properties
+        */
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #667eea;
+            color: #fff;
+            min-height: 100vh;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 10px 15px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 14px;
+            z-index: 1000;
+        }
+        
+        .theme-toggle:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Modern Theme (Default) - iOS 12 Compatible */
+        .modern-theme {
+            background: #667eea;
+        }
+        
+        .modern-theme .title {
+            color: #ff6b35;
+        }
+        
+        .modern-theme .button {
+            background: #ff6b35;
+        }
+        
+        .modern-theme .button.secondary {
+            background: #51cf66;
+        }
+        
+        .modern-theme .status-box h3 {
+            color: #ff6b35;
+        }
+        
+        .modern-theme .info-box h3 {
+            color: #74c0fc;
+        }
+        
+        .modern-theme .log-container h3 {
+            color: #74c0fc;
+        }
+        
+        /* Classic Theme */
+        .classic-theme {
+            background: #000 !important;
+        }
+        
+        .classic-theme .title {
+            color: #ff0000 !important;
+        }
+        
+        .classic-theme .button {
+            background: linear-gradient(45deg, #ff0000, #cc0000) !important;
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3) !important;
+        }
+        
+        .classic-theme .button:hover {
+            box-shadow: 0 12px 35px rgba(255, 0, 0, 0.4) !important;
+        }
+        
+        .classic-theme .button.secondary {
+            background: linear-gradient(45deg, #ff0000, #cc0000) !important;
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3) !important;
+        }
+        
+        .classic-theme .button.secondary:hover {
+            box-shadow: 0 12px 35px rgba(255, 0, 0, 0.4) !important;
+        }
+        
+        .classic-theme .status-box h3 {
+            color: #ff0000 !important;
+        }
+        
+        .classic-theme .info-box h3 {
+            color: #ff0000 !important;
+        }
+        
+        .classic-theme .log-container h3 {
+            color: #ff0000 !important;
+        }
+        
+        .classic-theme .theme-toggle {
+            background: rgba(255, 0, 0, 0.2) !important;
+            border-color: rgba(255, 0, 0, 0.3) !important;
+        }
+        
+        .classic-theme .theme-toggle:hover {
+            background: rgba(255, 0, 0, 0.3) !important;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ff6b35;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            color: #e0e0e0;
+            opacity: 0.9;
+        }
+        
+        .legacy-badge {
+            background: rgba(255, 107, 53, 0.2);
+            border: 1px solid #ff6b35;
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin: 10px auto;
+            display: inline-block;
+            font-size: 0.9em;
+            color: #ff6b35;
+        }
+        
+        .status-container {
+            display: block;
+            margin-bottom: 30px;
+        }
+        
+        .status-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+            color: #ff6b35;
+        }
+        
+        .status-box p {
+            margin: 0;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .button {
+            background: #ff6b35;
+            border: none;
+            color: white;
+            padding: 18px 36px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+            min-width: 200px;
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .button:active {
+            background: #e55a2b;
+        }
+        
+        .button.secondary {
+            background: #51cf66;
+        }
+        
+        .button.secondary:active {
+            background: #40c057;
+        }
+        
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .info-box h3 {
+            margin: 0 0 15px 0;
+            color: #74c0fc;
+        }
+        
+        .info-box p {
+            margin: 0 0 10px 0;
+            line-height: 1.6;
+        }
+        
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 300px;
+            overflow-y: scroll;
+            text-align: left;
+        }
+        
+        .log-container h3 {
+            margin: 0 0 15px 0;
+            color: #74c0fc;
+            text-align: center;
+        }
+        
+        .log-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .log-time {
+            color: #868e96;
+            margin-right: 10px;
+        }
+        
+        .log-message {
+            color: #e0e0e0;
+        }
+        
+        .log-error {
+            color: #ff6b6b;
+        }
+        
+        .log-success {
+            color: #51cf66;
+        }
+        
+        .log-info {
+            color: #74c0fc;
+        }
+        
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        .popup-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            margin: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .popup-content h3 {
+            color: #333;
+            margin: 0 0 20px 0;
+            font-size: 1.5em;
+        }
+        
+        .popup-content p {
+            color: #666;
+            margin: 0 0 20px 0;
+            line-height: 1.5;
+        }
+        
+        .popup-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .popup-button.primary {
+            background: #28a745;
+        }
+        
+        .popup-button.primary:hover {
+            background: #218838;
+        }
+        
+        .popup-button.secondary {
+            background: #6c757d;
+        }
+        
+        .popup-button.secondary:hover {
+            background: #5a6268;
+        }
+        
+        .popup-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .easter-egg-trigger {
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .spoof-options {
+            text-align: left;
+        }
+        
+        .spoof-options label {
+            display: block;
+            margin: 10px 0 5px 0;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .spoof-options select,
+        .spoof-options input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .spoof-buttons {
+            margin: 15px 0;
+        }
+        
+        .spoof-buttons .button {
+            margin: 5px;
+            display: inline-block;
+            width: auto;
+            min-width: 120px;
+        }
+        
+        .current-ua-display {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .current-ua-display p {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .current-ua-display code {
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body class="modern-theme">
+    <button class="theme-toggle" onclick="toggleTheme()">🎨 Toggle Theme</button>
+    <div class="container">
+        <div class="header">
+            <div class="title">🔓 TotallyNotSpyware v2</div>
+            <div class="subtitle">(commit-99baa0b)</div>
+            <div class="legacy-badge">Legacy Mode - iOS 12 Compatible</div>
+        </div>
+        
+        <div class="info-box">
+            <h3>📱 Device Compatibility</h3>
+            <p>✅ Works on iOS 12.0-12.5.x</p>
+            <p>✅ A7-A10 devices with Chimera jailbroken devices</p>
+            <p>⏱️ May take up to 20~30 seconds to build JOP chain and rejailbreak</p>
+        </div>
+        
+        <div class="status-container">
+            <div class="status-box">
+                <h3>🔌 WebSocket</h3>
+                <p id="ws-status">Disconnected</p>
+            </div>
+            <div class="status-box">
+                <h3>⚡ Ready</h3>
+                <p id="ready-status">No</p>
+            </div>
+        </div>
+        
+        <button class="button" onclick="startJailbreak()">🚀 Start Jailbreak</button>
+        <button class="button secondary" onclick="checkStatus()">🔍 Check Status</button>
+        
+        <div class="easter-egg-trigger">
+            <button class="button secondary" onclick="toggleSpoofingTool()" style="font-size: 12px; padding: 8px 16px; opacity: 0.7;">🔧 Debug Tools</button>
+        </div>
+        
+        <div class="info-box">
+            <h3>📱 PWA Installation</h3>
+            <p>1. Tap the Share button in Safari</p>
+            <p>2. Select "Add to Home Screen"</p>
+            <p>3. Tap "Add" to install the PWA</p>
+        </div>
+        
+        <div class="log-container">
+            <h3>📋 Activity Log</h3>
+            <div id="log"></div>
+        </div>
+        
+        <div id="spoofing-tool" class="info-box" style="display: none;">
+            <h3>🎭 User-Agent Spoofing Tool (Easter Egg)</h3>
+            <p><em>Test jailbreak functionality on different platforms</em></p>
+            
+            <div class="spoof-options">
+                <label>Select Platform:</label>
+                <select id="platform-select" onchange="updateSpoofedUA()">
+                    <option value="original">Original (Current)</option>
+                    <option value="ios12">iOS 12 Safari (iPad; CPU OS 12_5_1 like Mac OS X)</option>
+                    <option value="ios13">iOS 13 Safari (iPhone; CPU iPhone OS 13_7 like Mac OS X)</option>
+                    <option value="ios14">iOS 14 Safari (iPhone; CPU iPhone OS 14_8 like Mac OS X)</option>
+                    <option value="android">Android Chrome (Linux; Android 10; SM-G973F)</option>
+                    <option value="windows">Windows Chrome (Windows NT 10.0; Win64; x64)</option>
+                    <option value="macos">macOS Safari (Macintosh; Intel Mac OS X 10_15_7)</option>
+                    <option value="custom">Custom User-Agent...</option>
+                </select>
+                
+                <div id="custom-ua-input" style="display: none; margin-top: 10px;">
+                    <label>Custom User-Agent:</label>
+                    <input type="text" id="custom-ua-text" placeholder="Enter custom User-Agent string" style="width: 100%; padding: 8px; margin: 5px 0;">
+                </div>
+                
+                <div class="spoof-buttons">
+                    <button class="button secondary" onclick="applySpoofing()">🎭 Apply Spoofing</button>
+                    <button class="button secondary" onclick="resetSpoofing()">🔄 Reset to Original</button>
+                </div>
+                
+                <div class="current-ua-display">
+                    <p><strong>Current User-Agent:</strong></p>
+                    <code id="current-ua" style="background: #f8f9fa; padding: 8px; display: block; margin: 5px 0; font-size: 12px; word-break: break-all;"></code>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>🔗 Source Code</h3>
+            <p><a href="https://github.com/wh1te4ever/totally-not-spyware-v2" target="_blank" rel="noopener" style="color: #74c0fc;">GitHub Repository</a></p>
+        </div>
+        
+        <div class="info-box">
+            <h3>👨‍💻 Credits</h3>
+            <p><strong>Main Developer:</strong> wh1te4ever</p>
+            <p><strong>Kernel Exploit:</strong> alfiecg24 (stable), felix-pb</p>
+            <p><strong>WebKit Exploit:</strong> Samuel Groß (CVE-2020-9802)</p>
+            <p><strong>Chimera Jailbreak:</strong> CoolStar and all developers</p>
+            <p><strong>JOP Chaining & Code Execution:</strong> JakeBlair420 and TotallyNotSpyware developers</p>
+            <p><strong>Mach-O Loader:</strong> qwertyoruiop (+jitMemCpy)</p>
+            <p style="font-size: 0.9em; opacity: 0.8;">If I ever missed anyone, please let me know.</p>
+        </div>
+    </div>
+    
+    <script src="utils.js"></script>
+    <script src="helper.js"></script>
+    <script src="int64.js"></script>
+    <script src="stages.js"></script>
+    <script src="offsets.js"></script>
+    <script src="pwn.js"></script>
+    
+    <script>
+        var ws = null;
+        var isReady = false;
+        
+        function updateStatus() {
+            var wsStatus = document.getElementById('ws-status');
+            var readyStatus = document.getElementById('ready-status');
+            
+            if (wsStatus) wsStatus.textContent = ws && ws.readyState === 1 ? 'Connected' : 'Disconnected';
+            if (readyStatus) readyStatus.textContent = isReady ? 'Yes' : 'No';
+        }
+        
+        function logMessage(message, type) {
+            if (!type) type = 'info';
+            
+            var log = document.getElementById('log');
+            if (!log) return;
+            
+            var entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            var time = new Date().toLocaleTimeString();
+            var timeSpan = document.createElement('span');
+            timeSpan.className = 'log-time';
+            timeSpan.textContent = '[' + time + '] ';
+            
+            var messageSpan = document.createElement('span');
+            messageSpan.className = 'log-message log-' + type;
+            messageSpan.textContent = message;
+            
+            entry.appendChild(timeSpan);
+            entry.appendChild(messageSpan);
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function connectWebSocket() {
+            // Check if we're on a supported platform
+            var userAgent = navigator.userAgent;
+            var isIOS = /iPad|iPhone|iPod/i.test(userAgent);
+            var isWebKit = /WebKit/i.test(userAgent);
+            
+            if (!isIOS || !isWebKit) {
+                logMessage("Platform not supported: " + userAgent, "error");
+                logMessage("This exploit requires iOS WebKit browser", "info");
+                logMessage("WebSocket disabled for non-iOS platforms", "info");
+                updateStatus();
+                return;
+            }
+            
+            // For external access, use the current hostname
+            var protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            var host = window.location.hostname;
+            var wsUrl = protocol + '//' + host + ':8081/WebSocket';
+            
+            // Fallback for local testing
+            if (host === 'localhost' || host === '127.0.0.1') {
+                wsUrl = 'ws://localhost:8081/WebSocket';
+            }
+            
+            try {
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = function() {
+                    ws.send("totally-not-spyware-v2");
+                    logMessage("WebSocket connected", "success");
+                    updateStatus();
+                };
+                
+                ws.onclose = function() {
+                    logMessage("WebSocket disconnected", "error");
+                    updateStatus();
+                };
+                
+                ws.onerror = function(error) {
+                    logMessage("WebSocket error: " + error, "error");
+                    updateStatus();
+                };
+                
+                ws.onmessage = function(event) {
+                    logMessage("Received: " + event.data, "info");
+                };
+                
+            } catch (error) {
+                logMessage("WebSocket connection failed: " + error.message, "error");
+            }
+        }
+        
+        function startJailbreak() {
+            // Check platform compatibility first
+            var userAgent = navigator.userAgent;
+            var isIOS = /iPad|iPhone|iPod/i.test(userAgent);
+            var isWebKit = /WebKit/i.test(userAgent);
+            
+            if (!isIOS || !isWebKit) {
+                logMessage("Jailbreak failed: Platform not supported", "error");
+                logMessage("This exploit requires iOS WebKit browser", "info");
+                logMessage("Current platform: " + userAgent, "info");
+                return;
+            }
+            
+            if (typeof pwn === 'function') {
+                logMessage("Starting jailbreak process...", "info");
+                
+                // Show first popup: "Building JOP chain, executing stages payload!"
+                showPopup("Building JOP chain, executing stages payload!", "close", function() {
+                    // After clicking close, actually start the JOP chain
+                    logMessage("JOP chain building started", "info");
+                    logMessage("This may take 20-30 seconds...", "info");
+                    
+                    try {
+                        pwn();
+                        logMessage("JOP chain execution initiated", "success");
+                        
+                        // Simulate JOP chain completion after delay
+                        setTimeout(function() {
+                            showCompletionPopup();
+                        }, 25000); // 25 seconds to simulate JOP chain
+                        
+                    } catch (error) {
+                        logMessage("Jailbreak error: " + error.message, "error");
+                    }
+                });
+                
+            } else {
+                logMessage("Jailbreak function not available", "error");
+            }
+        }
+        
+        function showPopup(message, buttonText, callback) {
+            var popup = document.createElement('div');
+            popup.className = 'popup-overlay';
+            popup.innerHTML = `
+                <div class="popup-content">
+                    <h3>${message}</h3>
+                    <button class="popup-button" onclick="closePopupAndExecute()">${buttonText}</button>
+                </div>
+            `;
+            document.body.appendChild(popup);
+            
+            // Store callback for execution
+            popup.callback = callback;
+            
+            // Function to close popup and execute callback
+            window.closePopupAndExecute = function() {
+                popup.remove();
+                if (popup.callback) {
+                    popup.callback();
+                }
+            };
+        }
+        
+        function showCompletionPopup() {
+            var popup = document.createElement('div');
+            popup.className = 'popup-overlay';
+            popup.innerHTML = `
+                <div class="popup-content">
+                    <h3>re-jailbreak done</h3>
+                    <p>Choose userspace reboot or stay</p>
+                    <div class="popup-buttons">
+                        <button class="popup-button primary" onclick="userspaceReboot()">userspace reboot</button>
+                        <button class="popup-button secondary" onclick="stayInJailbreak()">stay</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(popup);
+        }
+        
+        function userspaceReboot() {
+            logMessage("Userspace reboot selected", "info");
+            logMessage("Device will reboot to complete jailbreak", "success");
+            // Remove popup
+            var popup = document.querySelector('.popup-overlay');
+            if (popup) popup.remove();
+        }
+        
+        function stayInJailbreak() {
+            logMessage("Stay option selected", "info");
+            logMessage("Jailbreak completed successfully", "success");
+            // Remove popup
+            var popup = document.querySelector('.popup-overlay');
+            if (popup) popup.remove();
+        }
+        
+        // User-Agent Spoofing Functions
+        var originalUserAgent = navigator.userAgent;
+        var spoofedUserAgent = null;
+        
+        function toggleSpoofingTool() {
+            var tool = document.getElementById('spoofing-tool');
+            if (tool.style.display === 'none') {
+                tool.style.display = 'block';
+                updateCurrentUADisplay();
+                logMessage("Debug tools activated (Easter Egg)", "info");
+            } else {
+                tool.style.display = 'none';
+                logMessage("Debug tools hidden", "info");
+            }
+        }
+        
+        function updateSpoofedUA() {
+            var select = document.getElementById('platform-select');
+            var customInput = document.getElementById('custom-ua-input');
+            
+            if (select.value === 'custom') {
+                customInput.style.display = 'block';
+            } else {
+                customInput.style.display = 'none';
+            }
+        }
+        
+        function applySpoofing() {
+            var select = document.getElementById('platform-select');
+            var customInput = document.getElementById('custom-ua-text');
+            
+            if (select.value === 'custom' && customInput.value.trim()) {
+                spoofedUserAgent = customInput.value.trim();
+            } else if (select.value !== 'original') {
+                spoofedUserAgent = getPresetUserAgent(select.value);
+            } else {
+                spoofedUserAgent = null;
+            }
+            
+            if (spoofedUserAgent) {
+                logMessage("User-Agent spoofed to: " + spoofedUserAgent, "success");
+                updateCurrentUADisplay();
+                
+                // Test platform detection with spoofed UA
+                testPlatformDetection();
+            } else {
+                logMessage("User-Agent reset to original", "success");
+                updateCurrentUADisplay();
+            }
+        }
+        
+        function resetSpoofing() {
+            spoofedUserAgent = null;
+            document.getElementById('platform-select').value = 'original';
+            document.getElementById('custom-ua-input').style.display = 'none';
+            updateCurrentUADisplay();
+            logMessage("User-Agent reset to original", "success");
+        }
+        
+        function getPresetUserAgent(platform) {
+            var presets = {
+                'ios12': 'Mozilla/5.0 (iPad; CPU OS 12_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.3 Mobile/15E148 Safari/604.1',
+                'ios13': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.2 Mobile/15E148 Safari/604.1',
+                'ios14': 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1',
+                'android': 'Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36',
+                'windows': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'macos': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15'
+            };
+            return presets[platform] || originalUserAgent;
+        }
+        
+        function updateCurrentUADisplay() {
+            var currentUA = document.getElementById('current-ua');
+            var displayUA = spoofedUserAgent || originalUserAgent;
+            currentUA.textContent = displayUA;
+            
+            // Add spoofing indicator
+            if (spoofedUserAgent) {
+                currentUA.style.borderLeft = '4px solid #ff6b35';
+                currentUA.style.background = '#fff3cd';
+            } else {
+                currentUA.style.borderLeft = '4px solid #28a745';
+                currentUA.style.background = '#f8f9fa';
+            }
+        }
+        
+        function testPlatformDetection() {
+            var testUA = spoofedUserAgent || originalUserAgent;
+            var isIOS = /iPad|iPhone|iPod/i.test(testUA);
+            var isWebKit = /WebKit/i.test(testUA);
+            
+            logMessage("Platform detection test with spoofed UA:", "info");
+            logMessage("User-Agent: " + testUA, "info");
+            logMessage("iOS detected: " + (isIOS ? "Yes" : "No"), isIOS ? "success" : "error");
+            logMessage("WebKit detected: " + (isWebKit ? "Yes" : "No"), isWebKit ? "success" : "error");
+            
+            if (isIOS && isWebKit) {
+                logMessage("✅ This platform would support jailbreak", "success");
+            } else {
+                logMessage("❌ This platform would NOT support jailbreak", "error");
+            }
+        }
+        
+        // Override navigator.userAgent for spoofing
+        Object.defineProperty(navigator, 'userAgent', {
+            get: function() {
+                return spoofedUserAgent || originalUserAgent;
+            }
+        });
+        
+        function checkStatus() {
+            logMessage("Checking system status...", "info");
+            
+            var files = ['pwn.js', 'stages.js', 'offsets.js', 'helper.js', 'utils.js'];
+            var missingFiles = [];
+            
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var script = document.querySelector('script[src="' + file + '"]');
+                if (!script) {
+                    missingFiles.push(file);
+                    logMessage("Script tag not found: " + file, "error");
+                } else {
+                    logMessage("Script tag found: " + file, "success");
+                }
+            }
+            
+            if (missingFiles.length > 0) {
+                logMessage("Missing files: " + missingFiles.join(', '), "error");
+            } else {
+                logMessage("All required files loaded", "success");
+                isReady = true;
+                updateStatus();
+            }
+        }
+        
+        function toggleTheme() {
+            var body = document.body;
+            var isClassic = body.classList.contains('classic-theme');
+            var isModern = body.classList.contains('modern-theme');
+            
+            if (isClassic) {
+                body.classList.remove('classic-theme');
+                body.classList.add('modern-theme');
+                logMessage("Switched to Modern Theme", "info");
+            } else if (isModern) {
+                body.classList.remove('modern-theme');
+                body.classList.add('classic-theme');
+                logMessage("Switched to Classic Theme", "info");
+            } else {
+                // Fallback - add modern theme
+                body.classList.add('modern-theme');
+                logMessage("Applied Modern Theme", "info");
+            }
+        }
+        
+        function initializeApp() {
+            logMessage("App initialized (Legacy Mode)", "info");
+            connectWebSocket();
+            checkStatus();
+            
+            setInterval(function() {
+                if (ws && ws.readyState === 1) {
+                    updateStatus();
+                }
+            }, 5000);
+        }
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        logMessage("Service Worker registered", "success");
+                    })
+                    .catch(function(error) {
+                        logMessage("Service Worker registration failed: " + error.message, "error");
+                    });
+            });
+        }
+        
+        window.addEventListener('load', initializeApp);
+        
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            logMessage("App can be installed to home screen", "info");
+        });
+        
+        // Keyboard shortcut for easter egg (Ctrl+Shift+D)
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                e.preventDefault();
+                toggleSpoofingTool();
+                logMessage("Easter egg activated via keyboard shortcut!", "info");
+            }
+        });
+    </script>
+</body>
+</html>

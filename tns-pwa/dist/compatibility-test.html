@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>iOS 12 Safari Compatibility Test - TNSv2</title>
+    
+    <!-- 100% iOS 12 Safari Compatibility -->
+    <link rel="stylesheet" href="compatibility.css">
+    <script src="compatibility.js"></script>
+    
+    <style>
+        /* Test page specific styles */
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid var(--border-color, #555555);
+            border-radius: var(--radius-md, 8px);
+        }
+        
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: var(--radius-sm, 4px);
+            font-weight: bold;
+        }
+        
+        .test-pass {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .test-fail {
+            background: #f44336;
+            color: white;
+        }
+        
+        .test-warning {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: var(--background-secondary, #2d2d2d);
+            border: 1px solid var(--border-color, #555555);
+            padding: 16px;
+            border-radius: var(--radius-md, 8px);
+        }
+        
+        .compatibility-score {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--background-secondary, #2d2d2d);
+            border-radius: var(--radius-md, 8px);
+        }
+        
+        .score-excellent { color: #4caf50; }
+        .score-good { color: #8bc34a; }
+        .score-fair { color: #ff9800; }
+        .score-poor { color: #f44336; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 iOS 12 Safari Compatibility Test</h1>
+        <p>This page tests your browser's compatibility with iOS 12 Safari and applies appropriate fallbacks.</p>
+        
+        <div class="compatibility-score" id="compatibilityScore">
+            Testing compatibility...
+        </div>
+        
+        <div class="test-section">
+            <h2>🌐 Browser Detection</h2>
+            <div id="browserInfo">Detecting browser...</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎨 CSS Feature Support</h2>
+            <div class="feature-grid" id="cssFeatures">
+                <!-- CSS features will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📱 Touch & Mobile Features</h2>
+            <div id="mobileFeatures">Testing mobile features...</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎯 Compatibility Tests</h2>
+            <div id="compatibilityTests">
+                <!-- Tests will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🚀 Performance Tests</h2>
+            <div id="performanceTests">Running performance tests...</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📋 Recommendations</h2>
+            <div id="recommendations">Analyzing results...</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔗 Navigation</h2>
+            <a href="index.html" class="button">Modern PWA</a>
+            <a href="legacy.html" class="button secondary">Legacy PWA</a>
+            <a href="bypass.html" class="button">ngrok Bypass</a>
+        </div>
+    </div>
+
+    <script>
+        // Wait for compatibility manager to load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(runCompatibilityTests, 1000);
+        });
+        
+        function runCompatibilityTests() {
+            if (!window.compatibilityManager) {
+                document.getElementById('compatibilityScore').innerHTML = '❌ Compatibility Manager not loaded';
+                return;
+            }
+            
+            const features = window.compatibilityManager.features;
+            displayBrowserInfo(features);
+            displayCSSFeatures(features);
+            displayMobileFeatures(features);
+            runCompatibilityTests(features);
+            runPerformanceTests();
+            generateRecommendations(features);
+            calculateCompatibilityScore(features);
+        }
+        
+        function displayBrowserInfo(features) {
+            const browserInfo = document.getElementById('browserInfo');
+            const userAgent = navigator.userAgent;
+            const platform = navigator.platform;
+            
+            browserInfo.innerHTML = `
+                <div class="feature-card">
+                    <h3>User Agent</h3>
+                    <p>${userAgent}</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Platform</h3>
+                    <p>${platform}</p>
+                </div>
+                <div class="feature-card">
+                    <h3>iOS Version</h3>
+                    <p>${features.ios12 ? 'iOS 12.x' : features.ios ? 'iOS (Other)' : 'Not iOS'}</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Safari Version</h3>
+                    <p>${features.safari12 ? 'Safari 12.x' : features.webkit ? 'WebKit-based' : 'Not WebKit'}</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Touch Support</h3>
+                    <p>${features.touch ? 'Yes' : 'No'}</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Compatibility Level</h3>
+                    <p>${features.safari12 ? '🔧 Safari 12 Optimized' : features.ios12 ? '📱 iOS 12 Optimized' : '🌐 Universal'}</p>
+                </div>
+            `;
+        }
+        
+        function displayCSSFeatures(features) {
+            const cssFeatures = document.getElementById('cssFeatures');
+            const featureList = [
+                { name: 'CSS Variables', supported: features.cssVariables, description: 'Custom CSS properties' },
+                { name: 'Flexbox', supported: features.flexbox, description: 'Flexible box layout' },
+                { name: 'CSS Grid', supported: features.grid, description: 'Grid layout system' },
+                { name: 'Transforms', supported: features.transforms, description: 'CSS transforms' },
+                { name: 'Transitions', supported: features.transitions, description: 'CSS transitions' },
+                { name: 'WebKit', supported: features.webkit, description: 'WebKit engine' }
+            ];
+            
+            cssFeatures.innerHTML = featureList.map(feature => `
+                <div class="feature-card">
+                    <h3>${feature.name}</h3>
+                    <p>${feature.description}</p>
+                    <div class="test-result ${feature.supported ? 'test-pass' : 'test-fail'}">
+                        ${feature.supported ? '✅ Supported' : '❌ Not Supported'}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function displayMobileFeatures(features) {
+            const mobileFeatures = document.getElementById('mobileFeatures');
+            
+            mobileFeatures.innerHTML = `
+                <div class="feature-card">
+                    <h3>Touch Events</h3>
+                    <p>Touch event support</p>
+                    <div class="test-result ${features.touch ? 'test-pass' : 'test-fail'}">
+                        ${features.touch ? '✅ Touch Supported' : '❌ No Touch Support'}
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <h3>iOS Optimization</h3>
+                    <p>iOS-specific optimizations</p>
+                    <div class="test-result ${features.ios12 ? 'test-pass' : 'test-warning'}">
+                        ${features.ios12 ? '✅ iOS 12 Optimized' : '⚠️ Not iOS 12'}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function runCompatibilityTests(features) {
+            const compatibilityTests = document.getElementById('compatibilityTests');
+            
+            const tests = [
+                { name: 'Button Rendering', test: testButtonRendering },
+                { name: 'CSS Variables', test: testCSSVariables },
+                { name: 'Layout Systems', test: testLayoutSystems },
+                { name: 'Touch Targets', test: testTouchTargets },
+                { name: 'Safari 12 Optimizations', test: testSafari12Optimizations }
+            ];
+            
+            compatibilityTests.innerHTML = tests.map(test => `
+                <div class="feature-card">
+                    <h3>${test.name}</h3>
+                    <div id="test-${test.name.replace(/\s+/g, '-')}">Running test...</div>
+                </div>
+            `).join('');
+            
+            // Run tests
+            tests.forEach(test => {
+                setTimeout(() => {
+                    const resultElement = document.getElementById(`test-${test.name.replace(/\s+/g, '-')}`);
+                    const result = test.test();
+                    resultElement.innerHTML = `<div class="test-result ${result.pass ? 'test-pass' : 'test-fail'}">${result.message}</div>`;
+                }, Math.random() * 1000);
+            });
+        }
+        
+        function testButtonRendering() {
+            const button = document.createElement('button');
+            button.textContent = 'Test Button';
+            button.style.cssText = 'background: var(--primary-color, #ff6b6b); padding: 12px; margin: 10px;';
+            document.body.appendChild(button);
+            
+            const rect = button.getBoundingClientRect();
+            const pass = rect.width > 0 && rect.height > 0;
+            
+            document.body.removeChild(button);
+            
+            return {
+                pass: pass,
+                message: pass ? '✅ Buttons render correctly' : '❌ Button rendering issues'
+            };
+        }
+        
+        function testCSSVariables() {
+            const testElement = document.createElement('div');
+            testElement.style.cssText = '--test-color: #ff0000; background: var(--test-color, #00ff00); width: 20px; height: 20px;';
+            document.body.appendChild(testElement);
+            
+            const computedStyle = window.getComputedStyle(testElement);
+            const backgroundColor = computedStyle.backgroundColor;
+            const pass = backgroundColor.includes('255, 0, 0') || backgroundColor.includes('rgb(255, 0, 0)');
+            
+            document.body.removeChild(testElement);
+            
+            return {
+                pass: pass,
+                message: pass ? '✅ CSS Variables work' : '❌ CSS Variables not supported'
+            };
+        }
+        
+        function testLayoutSystems() {
+            const testElement = document.createElement('div');
+            testElement.style.cssText = 'display: flex; align-items: center; justify-content: center; width: 100px; height: 100px; background: #ccc;';
+            testElement.innerHTML = '<div style="background: #ff0000; width: 20px; height: 20px;"></div>';
+            document.body.appendChild(testElement);
+            
+            const rect = testElement.getBoundingClientRect();
+            const pass = rect.width === 100 && rect.height === 100;
+            
+            document.body.removeChild(testElement);
+            
+            return {
+                pass: pass,
+                message: pass ? '✅ Layout systems work' : '❌ Layout system issues'
+            };
+        }
+        
+        function testTouchTargets() {
+            const buttons = document.querySelectorAll('button, .button');
+            let pass = true;
+            
+            buttons.forEach(button => {
+                const rect = button.getBoundingClientRect();
+                if (rect.width < 44 || rect.height < 44) {
+                    pass = false;
+                }
+            });
+            
+            return {
+                pass: pass,
+                message: pass ? '✅ Touch targets are adequate' : '❌ Touch targets too small'
+            };
+        }
+        
+        function testSafari12Optimizations() {
+            if (!window.compatibilityManager || !window.compatibilityManager.features.safari12) {
+                return {
+                    pass: true,
+                    message: '⚠️ Not Safari 12 - skipping test'
+                };
+            }
+            
+            // Test Safari 12 specific features
+            const hasTransform = CSS.supports('transform', 'translateZ(0)');
+            const hasWebkitOverflow = CSS.supports('-webkit-overflow-scrolling', 'touch');
+            const hasAppearance = CSS.supports('-webkit-appearance', 'none');
+            
+            const pass = hasTransform && hasWebkitOverflow && hasAppearance;
+            
+            return {
+                pass: pass,
+                message: pass ? '✅ Safari 12 optimizations working' : '❌ Safari 12 optimizations failed'
+            };
+        }
+        
+        function runPerformanceTests() {
+            const performanceTests = document.getElementById('performanceTests');
+            
+            // Simple performance test
+            const startTime = performance.now();
+            let testElement = document.createElement('div');
+            for (let i = 0; i < 1000; i++) {
+                testElement.style.backgroundColor = `hsl(${i % 360}, 50%, 50%)`;
+            }
+            const endTime = performance.now();
+            
+            const duration = endTime - startTime;
+            const performance = duration < 100 ? 'Excellent' : duration < 200 ? 'Good' : duration < 500 ? 'Fair' : 'Poor';
+            const performanceClass = duration < 100 ? 'test-pass' : duration < 200 ? 'test-pass' : duration < 500 ? 'test-warning' : 'test-fail';
+            
+            performanceTests.innerHTML = `
+                <div class="feature-card">
+                    <h3>CSS Performance</h3>
+                    <p>Style manipulation test: ${duration.toFixed(2)}ms</p>
+                    <div class="test-result ${performanceClass}">
+                        ${performance} Performance
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateRecommendations(features) {
+            const recommendations = document.getElementById('recommendations');
+            const recs = [];
+            
+            if (!features.cssVariables) {
+                recs.push('Use CSS variables polyfill for consistent theming');
+            }
+            
+            if (!features.flexbox) {
+                recs.push('Use block layouts as fallback for flexbox');
+            }
+            
+            if (features.ios12) {
+                recs.push('iOS 12 detected - using optimized fallbacks');
+            }
+            
+            if (features.safari12) {
+                recs.push('Safari 12 detected - applying specific optimizations');
+                recs.push('Using hardware acceleration and touch optimizations');
+                recs.push('CSS variable caching fixes applied');
+            }
+            
+            if (!features.touch) {
+                recs.push('Desktop browser detected - touch optimizations disabled');
+            }
+            
+            recommendations.innerHTML = `
+                <div class="feature-card">
+                    <h3>Optimization Recommendations</h3>
+                    <ul>
+                        ${recs.map(rec => `<li>${rec}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>Browser-Specific Tips</h3>
+                    ${features.safari12 ? `
+                        <p><strong>Safari 12:</strong> This browser is fully optimized with:</p>
+                        <ul>
+                            <li>Hardware acceleration for smooth scrolling</li>
+                            <li>Touch event optimizations</li>
+                            <li>CSS variable caching fixes</li>
+                            <li>Viewport and font rendering improvements</li>
+                        </ul>
+                    ` : features.ios12 ? `
+                        <p><strong>iOS 12:</strong> Using iOS-specific optimizations:</p>
+                        <ul>
+                            <li>Touch target sizing (44px minimum)</li>
+                            <li>Input zoom prevention (16px font size)</li>
+                            <li>Smooth scrolling with -webkit-overflow-scrolling</li>
+                        </ul>
+                    ` : `
+                        <p><strong>Universal:</strong> Using cross-browser compatible features</p>
+                    `}
+                </div>
+            `;
+        }
+        
+        function calculateCompatibilityScore(features) {
+            const totalFeatures = 6; // CSS variables, flexbox, grid, transforms, transitions, webkit
+            const supportedFeatures = Object.values(features).filter(Boolean).length;
+            const score = Math.round((supportedFeatures / totalFeatures) * 100);
+            
+            let scoreClass = 'score-excellent';
+            let scoreText = 'Excellent';
+            
+            if (score < 80) {
+                scoreClass = 'score-good';
+                scoreText = 'Good';
+            }
+            if (score < 60) {
+                scoreClass = 'score-fair';
+                scoreText = 'Fair';
+            }
+            if (score < 40) {
+                scoreClass = 'score-poor';
+                scoreText = 'Poor';
+            }
+            
+            document.getElementById('compatibilityScore').innerHTML = `
+                <div class="${scoreClass}">
+                    ${score}% Compatibility<br>
+                    <small>${scoreText}</small>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

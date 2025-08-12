@@ -2,15 +2,133 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TNSv2">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    
+    <title>TotallyNotSpyware v2</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
+    
+    <!-- Splash Screen Images for iOS -->
+    <link rel="apple-touch-startup-image" href="/icons/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #000;
+            color: #fff;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #ff6b6b;
+        }
+        
+        .status {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .pwn-button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .pwn-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        .pwn-button:active {
+            transform: translateY(0);
+        }
+        
+        #log {
+            text-align: left;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .error {
+            color: #ff6b6b;
+        }
+        
+        .success {
+            color: #51cf66;
+        }
+        
+        .info {
+            color: #74c0fc;
+        }
+    </style>
+    
     <script type="text/javascript" src="utils.js"></script>
     <script type="text/javascript" src="helper.js"></script>
     <script type="text/javascript" src="int64.js"></script>
     <script type="text/javascript" src="stages.js"></script>
     <script type="text/javascript" src="offsets.js"></script>
     <script type="text/javascript" src="pwn.js"></script>
+    
     <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+        
+        // WebSocket connection
         var loc = window.location;
         var wsProtocol = loc.protocol === 'https:' ? 'wss:' : 'ws:';
         var wsURL = wsProtocol + '//' + loc.host + '/WebSocket';
@@ -18,40 +136,72 @@
             var ws = new WebSocket(wsURL);
             ws.onopen = function() {
                 ws.send("totally-not-spyware-v2");
+                logMessage("WebSocket connected", "success");
+            };
+            ws.onerror = function(error) {
+                logMessage("WebSocket error: " + error, "error");
             };
         } catch (error) {
-            void(0);
+            logMessage("WebSocket connection failed", "error");
         }
+        
+        // Logging function
+        function logMessage(message, type = "info") {
+            const logElement = document.getElementById("log");
+            const timestamp = new Date().toLocaleTimeString();
+            const messageDiv = document.createElement("div");
+            messageDiv.className = type;
+            messageDiv.innerHTML = `[${timestamp}] ${message}`;
+            logElement.appendChild(messageDiv);
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        // Error handling
+        window.onerror = function(message, source, lineno, colno, error) {
+            try {
+                let ErrorName = error.name;
+            } catch (ee) {
+                logMessage("This browser is not supported!", "error");
+                return true;
+            }
+            if ('InvalidStateError' == error.name) {
+                location.reload();
+            } else if ('TypeError' == error.name) {
+                location.reload();
+            } else {
+                logMessage(`${message} @ ${lineno}`, "error");
+                try {
+                    ws.send(""+message+" @ "+lineno);
+                } catch (error) {
+                    void(0);
+                }
+            }
+            return true;
+        };
+        
+        // Add to Home Screen prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            logMessage("App can be installed to home screen", "info");
+        });
     </script>
 </head>
 <body>
-    <p id="log">
-    </p>
-    <script>
-    window.onerror = function(message, source, lineno, colno, error) {
-        try {
-            let ErrorName = error.name;
-        } catch (ee) {
-            document.getElementById("log").innerHTML += "<h1 style='color:red'>This browser is not supported!</h1>";
-            return true;
-        }
-        if ('InvalidStateError' == error.name) {
-            location.reload();
-        } else if ('TypeError' == error.name) {
-            location.reload();
-        } else {
-            document.getElementById("log").innerHTML += "<h1 style='color:red'>"+message+" @ "+lineno+"</h1>";
-            try {
-                ws.send(""+message+" @ "+lineno);
-            } catch (error) {
-                void(0);
-            }
-        }
-        return true;
-    };
-    </script>
-
-    <button onclick="pwn();">pwn</button>
-    
+    <div class="container">
+        <div class="logo">🔓 TotallyNotSpyware v2</div>
+        
+        <div class="status">
+            <h3>iOS 12 Chimera Re-Jailbreak Utility</h3>
+            <p>Ready to re-jailbreak your device</p>
+        </div>
+        
+        <button class="pwn-button" onclick="pwn();">🚀 Start Jailbreak</button>
+        
+        <div id="log">
+            <div class="info">[System] App initialized and ready</div>
+        </div>
+    </div>
 </body>
 </html>

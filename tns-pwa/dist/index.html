@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TNSv2">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    
+    <title>TotallyNotSpyware v2</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
+    
+    <link rel="apple-touch-startup-image" href="/icons/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/icons/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+    
+    <!-- 100% iOS 12 Safari Compatibility -->
+    <link rel="stylesheet" href="compatibility.css">
+    <script src="compatibility.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 10px 15px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .classic-theme {
+            background: #000 !important;
+        }
+        
+        .classic-theme .title {
+            color: #ff0000 !important;
+        }
+        
+        .classic-theme .button {
+            background: linear-gradient(45deg, #ff0000, #cc0000) !important;
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3) !important;
+        }
+        
+        .classic-theme .button:hover {
+            box-shadow: 0 12px 35px rgba(255, 0, 0, 0.4) !important;
+        }
+        
+        .classic-theme .button.secondary {
+            background: linear-gradient(45deg, #ff0000, #cc0000) !important;
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3) !important;
+        }
+        
+        .classic-theme .button.secondary:hover {
+            box-shadow: 0 12px 35px rgba(255, 0, 0, 0.4) !important;
+        }
+        
+        .classic-theme .status-box h3 {
+            color: #ff0000 !important;
+        }
+        
+        .classic-theme .info-box h3 {
+            color: #ff0000 !important;
+        }
+        
+        .classic-theme .log-container h3 {
+            color: #ff0000 !important;
+        }
+        
+        /* iOS 12 Safari Compatibility - Modern Theme */
+        .modern-theme {
+            background: #1a1a1a; /* Fallback */
+            background: var(--background-primary, #1a1a1a);
+            color: #ffffff; /* Fallback */
+            color: var(--text-primary, #ffffff);
+        }
+        
+        .modern-theme .button {
+            background: #ff6b6b; /* Fallback */
+            background: var(--primary-color, #ff6b6b);
+            border: 2px solid #ff6b6b; /* Fallback */
+            border: 2px solid var(--primary-color, #ff6b6b);
+            color: #ffffff; /* Fallback */
+            color: var(--text-primary, #ffffff);
+            padding: 12px 24px;
+            margin: 8px;
+            border-radius: 8px; /* Fallback */
+            border-radius: var(--radius-md, 8px);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            min-height: 44px; /* iOS minimum touch target */
+            min-width: 44px;
+        }
+        
+        .modern-theme .button:hover {
+            background: #ff8a8a; /* Fallback */
+            background: var(--secondary-color, #ff8a8a);
+            border-color: #ff8a8a; /* Fallback */
+            border-color: var(--secondary-color, #ff8a8a);
+        }
+        
+        .modern-theme .button.secondary {
+            background: transparent;
+            color: #ff6b6b; /* Fallback */
+            color: var(--primary-color, #ff6b6b);
+        }
+        
+        .modern-theme .button.secondary:hover {
+            background: #ff6b6b; /* Fallback */
+            background: var(--primary-color, #ff6b6b);
+            color: #ffffff; /* Fallback */
+            color: var(--text-primary, #ffffff);
+        }
+        
+        .modern-theme .info-box {
+            background: #2d2d2d; /* Fallback */
+            background: var(--background-secondary, #2d2d2d);
+            border: 1px solid #555555; /* Fallback */
+            border: 1px solid var(--border-color, #555555);
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 8px; /* Fallback */
+            border-radius: var(--radius-md, 8px);
+        }
+        
+        .modern-theme .log-container {
+            background: #2d2d2d; /* Fallback */
+            background: var(--background-secondary, #2d2d2d);
+            border: 1px solid #555555; /* Fallback */
+            border: 1px solid var(--border-color, #555555);
+            padding: 16px;
+            max-height: 300px;
+            overflow-y: scroll; /* iOS 12 compatible */
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px; /* Fallback */
+            border-radius: var(--radius-md, 8px);
+        }
+        
+        .modern-theme .status-box {
+            background: #404040; /* Fallback */
+            background: var(--background-tertiary, #404040);
+            border: 1px solid #777777; /* Fallback */
+            border: 1px solid var(--border-light, #777777);
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 4px; /* Fallback */
+            border-radius: var(--radius-sm, 4px);
+            text-align: center;
+        }
+        
+        /* iOS 12 specific overrides */
+        .ios12 .modern-theme .button {
+            transform: none;
+            transition: none;
+            box-shadow: none;
+        }
+        
+        .ios12 .modern-theme .info-box {
+            box-shadow: none;
+        }
+        
+        .ios12 .modern-theme .log-container {
+            box-shadow: none;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ff6b35;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            color: #e0e0e0;
+            opacity: 0.9;
+        }
+        
+        .status-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        .status-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+            color: #ff6b35;
+        }
+        
+        .status-box p {
+            margin: 0;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .button {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            color: white;
+            padding: 18px 36px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+            transition: all 0.3s ease;
+            margin: 10px;
+            min-width: 200px;
+        }
+        
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4);
+        }
+        
+        .button:active {
+            transform: translateY(-1px);
+        }
+        
+        .button.secondary {
+            background: linear-gradient(45deg, #51cf66, #40c057);
+            box-shadow: 0 8px 25px rgba(81, 207, 102, 0.3);
+        }
+        
+        .button.secondary:hover {
+            box-shadow: 0 12px 35px rgba(81, 207, 102, 0.4);
+        }
+        
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .info-box h3 {
+            margin: 0 0 15px 0;
+            color: #74c0fc;
+        }
+        
+        .info-box p {
+            margin: 0 0 10px 0;
+            line-height: 1.6;
+        }
+        
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        
+        .log-container h3 {
+            margin: 0 0 15px 0;
+            color: #74c0fc;
+            text-align: center;
+        }
+        
+        .log-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .log-time {
+            color: #868e96;
+            margin-right: 10px;
+        }
+        
+        .log-message {
+            color: #e0e0e0;
+        }
+        
+        .log-error {
+            color: #ff6b6b;
+        }
+        
+        .log-success {
+            color: #51cf66;
+        }
+        
+        .log-info {
+            color: #74c0fc;
+        }
+        
+        @media (max-width: 768px) {
+            .status-container {
+                flex-direction: column;
+            }
+            
+            .button {
+                min-width: 150px;
+                padding: 15px 30px;
+                font-size: 16px;
+            }
+        }
+        
+        .easter-egg-trigger {
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .spoof-options {
+            text-align: left;
+        }
+        
+        .spoof-options label {
+            display: block;
+            margin: 10px 0 5px 0;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .spoof-options select,
+        .spoof-options input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .spoof-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .spoof-buttons .button {
+            flex: 1;
+            min-width: 120px;
+            margin: 0;
+        }
+        
+        .current-ua-display {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .current-ua-display p {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .current-ua-display code {
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+    
+    <script>
+        // Force legacy mode for ngrok testing
+        if (window.location.hostname.includes('ngrok')) {
+            // Add ngrok bypass header
+            if (window.location.protocol === 'https:') {
+                // For HTTPS, we need to handle this differently
+                // Try to redirect with a custom User-Agent approach
+                window.location.href = "legacy.html?ngrok=true";
+            } else {
+                window.location.href = "legacy.html";
+            }
+        }
+        // Original iOS version detection
+        else if (navigator.userAgent.match(/iPad|iPhone|iPod/i) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+            let version = (navigator.userAgent).match(/OS (\d)?\d_\d(_\d)?/i)[0].split('_')[0].replace("OS ","");
+            if (version < 13) {
+                window.location.href = "legacy.html";
+            }
+        }
+    </script>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">🎨 Toggle Theme</button>
+    <div class="container">
+        <div class="header">
+            <div class="title">🔓 TotallyNotSpyware v2</div>
+            <div class="subtitle">iOS 12 Chimera Re-Jailbreak Utility</div>
+        </div>
+        
+        <div class="status-container">
+            <div class="status-box">
+                <h3>🔌 WebSocket</h3>
+                <p id="ws-status">Disconnected</p>
+            </div>
+            <div class="status-box">
+                <h3>⚡ Ready</h3>
+                <p id="ready-status">No</p>
+            </div>
+        </div>
+        
+        <button class="button" onclick="startJailbreak()">🚀 Start Jailbreak</button>
+        <button class="button secondary" onclick="checkStatus()">🔍 Check Status</button>
+        
+        <div class="easter-egg-trigger">
+            <button class="button secondary" onclick="if(typeof toggleSpoofingTool === 'function') { toggleSpoofingTool(); } else { alert('Function not loaded yet. Please wait and try again.'); }" style="font-size: 14px; padding: 10px 20px; opacity: 1.0; margin: 10px auto; display: block;">🔧 Debug Tools (Easter Egg)</button>
+            <button class="button secondary" onclick="console.log('Test button clicked')" style="font-size: 12px; padding: 5px 10px; opacity: 0.8; margin: 5px auto; display: block;">🧪 Test Button</button>
+            <button class="button secondary" onclick="alert('Function test: ' + typeof toggleSpoofingTool)" style="font-size: 12px; padding: 5px 10px; opacity: 0.8; margin: 5px auto; display: block;">🔍 Test Function</button>
+            <button class="button secondary" onclick="alert('Direct test: ' + (typeof toggleSpoofingTool === 'function' ? 'Function exists!' : 'Function missing!'))" style="font-size: 12px; padding: 5px 10px; opacity: 0.8; margin: 5px auto; display: block;">🚨 Direct Test</button>
+            <button class="button secondary" onclick="document.getElementById('spoofing-tool').style.display = 'block'; document.getElementById('spoofing-status').textContent = 'Activated via inline button';" style="font-size: 12px; padding: 5px 10px; opacity: 0.8; margin: 5px auto; display: block;">⚡ Inline Test</button>
+        </div>
+        
+        <div class="info-box">
+            <h3>📱 Installation Instructions</h3>
+            <p>1. Tap the Share button in Safari</p>
+            <p>2. Select "Add to Home Screen"</p>
+            <p>3. Tap "Add" to install the PWA</p>
+        </div>
+        
+        <div class="log-container">
+            <h3>📋 Activity Log</h3>
+            <div id="log"></div>
+        </div>
+        
+        <div id="spoofing-tool" class="info-box" style="display: none;">
+            <h3>🎭 User-Agent Spoofing Tool (Easter Egg)</h3>
+            <p><em>Test jailbreak functionality on different platforms</em></p>
+            <p><strong>Status:</strong> <span id="spoofing-status">Ready</span></p>
+            
+            <div class="spoof-options">
+                <label>Select Platform:</label>
+                <select id="platform-select" onchange="updateSpoofedUA()">
+                    <option value="original">Original (Current)</option>
+                    <option value="ios12">iOS 12 Safari (iPad; CPU OS 12_5_1 like Mac OS X)</option>
+                    <option value="ios13">iOS 13 Safari (iPhone; CPU iPhone OS 13_7 like Mac OS X)</option>
+                    <option value="ios14">iOS 14 Safari (iPhone; CPU iPhone OS 14_8 like Mac OS X)</option>
+                    <option value="android">Android Chrome (Linux; Android 10; SM-G973F)</option>
+                    <option value="windows">Windows Chrome (Windows NT 10.0; Win64; x64)</option>
+                    <option value="macos">macOS Safari (Macintosh; Intel Mac OS X 10_15_7)</option>
+                    <option value="custom">Custom User-Agent...</option>
+                </select>
+                
+                <div id="custom-ua-input" style="display: none; margin-top: 10px;">
+                    <label>Custom User-Agent:</label>
+                    <input type="text" id="custom-ua-text" placeholder="Enter custom User-Agent string" style="width: 100%; padding: 8px; margin: 5px 0;">
+                </div>
+                
+                <div class="spoof-buttons">
+                    <button class="button secondary" onclick="applySpoofing()">🎭 Apply Spoofing</button>
+                    <button class="button secondary" onclick="resetSpoofing()">🔄 Reset to Original</button>
+                </div>
+                
+                <div class="current-ua-display">
+                    <p><strong>Current User-Agent:</strong></p>
+                    <code id="current-ua" style="background: #f8f9fa; padding: 8px; display: block; margin: 5px 0; font-size: 12px; word-break: break-all;"></code>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="utils.js"></script>
+    <script src="helper.js"></script>
+    <script src="int64.js"></script>
+    <script src="stages.js"></script>
+    <script src="offsets.js"></script>
+    <script src="pwn.js"></script>
+    
+    <script>
+        let ws = null;
+        let isReady = false;
+        
+        function updateStatus() {
+            document.getElementById('ws-status').textContent = ws && ws.readyState === WebSocket.OPEN ? 'Connected' : 'Disconnected';
+            document.getElementById('ready-status').textContent = isReady ? 'Yes' : 'No';
+        }
+        
+        function logMessage(message, type = 'info') {
+            const log = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            const time = new Date().toLocaleTimeString();
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'log-time';
+            timeSpan.textContent = `[${time}] `;
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.className = `log-message log-${type}`;
+            messageSpan.textContent = message;
+            
+            entry.appendChild(timeSpan);
+            entry.appendChild(messageSpan);
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function connectWebSocket() {
+            // Check if we're on a supported platform
+            const userAgent = navigator.userAgent;
+            const isIOS = /iPad|iPhone|iPod/i.test(userAgent);
+            const isWebKit = /WebKit/i.test(userAgent);
+            
+            if (!isIOS || !isWebKit) {
+                logMessage("Platform not supported: " + userAgent, "error");
+                logMessage("This exploit requires iOS WebKit browser", "info");
+                logMessage("WebSocket disabled for non-iOS platforms", "info");
+                updateStatus();
+                return;
+            }
+            
+            // For external access, use the current hostname
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = window.location.hostname;
+            let wsUrl = `${protocol}//${host}:8081/WebSocket`;
+            
+            // Fallback for local testing
+            if (host === 'localhost' || host === '127.0.0.1') {
+                wsUrl = 'ws://localhost:8081/WebSocket';
+            }
+            
+            try {
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = function() {
+                    ws.send("totally-not-spyware-v2");
+                    logMessage("WebSocket connected", "success");
+                    updateStatus();
+                };
+                
+                ws.onclose = function() {
+                    logMessage("WebSocket disconnected", "error");
+                    updateStatus();
+                };
+                
+                ws.onerror = function(error) {
+                    logMessage("WebSocket error: " + error, "error");
+                    updateStatus();
+                };
+                
+                ws.onmessage = function(event) {
+                    logMessage("Received: " + event.data, "info");
+                };
+                
+            } catch (error) {
+                logMessage("WebSocket connection failed: " + error.message, "error");
+            }
+        }
+        
+        function startJailbreak() {
+            // Check platform compatibility first
+            const userAgent = navigator.userAgent;
+            const isIOS = /iPad|iPhone|iPod/i.test(userAgent);
+            const isWebKit = /WebKit/i.test(userAgent);
+            
+            if (!isIOS || !isWebKit) {
+                logMessage("Jailbreak failed: Platform not supported", "error");
+                logMessage("This exploit requires iOS WebKit browser", "info");
+                logMessage("Current platform: " + userAgent, "info");
+                return;
+            }
+            
+            if (typeof pwn === 'function') {
+                logMessage("Starting jailbreak process...", "info");
+                try {
+                    pwn();
+                    logMessage("Jailbreak process initiated", "success");
+                } catch (error) {
+                    logMessage("Jailbreak error: " + error.message, "error");
+                }
+            } else {
+                logMessage("Jailbreak function not available", "error");
+            }
+        }
+        
+        function checkStatus() {
+            logMessage("Checking system status...", "info");
+            
+            const files = ['pwn.js', 'stages.js', 'offsets.js', 'helper.js', 'utils.js'];
+            const missingFiles = [];
+            
+            files.forEach(file => {
+                const script = document.querySelector(`script[src="${file}"]`);
+                if (!script) {
+                    missingFiles.push(file);
+                    logMessage(`Script tag not found: ${file}`, "error");
+                } else {
+                    logMessage(`Script tag found: ${file}`, "success");
+                }
+            });
+            
+            if (missingFiles.length > 0) {
+                logMessage("Missing files: " + missingFiles.join(', '), "error");
+            } else {
+                logMessage("All required files loaded", "success");
+                isReady = true;
+                updateStatus();
+            }
+        }
+        
+        function toggleTheme() {
+            const body = document.body;
+            const isClassic = body.classList.contains('classic-theme');
+            
+            if (isClassic) {
+                body.classList.remove('classic-theme');
+                logMessage("Switched to Modern Theme", "info");
+            } else {
+                body.classList.add('classic-theme');
+                logMessage("Switched to Classic Theme", "info");
+            }
+        }
+        
+        function initializeApp() {
+            logMessage("App initialized", "info");
+            connectWebSocket();
+            checkStatus();
+            
+            setInterval(() => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    updateStatus();
+                }
+            }, 5000);
+        }
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        logMessage("Service Worker registered", "success");
+                    })
+                    .catch(error => {
+                        logMessage("Service Worker registration failed: " + error.message, "error");
+                    });
+            });
+        }
+        
+        window.addEventListener('load', initializeApp);
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            logMessage("App can be installed to home screen", "info");
+        });
+        
+        // User-Agent Spoofing Functions
+        let originalUserAgent = navigator.userAgent;
+        let spoofedUserAgent = null;
+        
+        function toggleSpoofingTool() {
+            try {
+                console.log("toggleSpoofingTool called");
+                const tool = document.getElementById('spoofing-tool');
+                console.log("Found tool element:", tool);
+                
+                if (!tool) {
+                    console.error("spoofing-tool element not found!");
+                    alert("Error: Spoofing tool element not found. Please refresh the page.");
+                    return;
+                }
+                
+                if (tool.style.display === 'none' || tool.style.display === '') {
+                    tool.style.display = 'block';
+                    updateCurrentUADisplay();
+                    logMessage("Debug tools activated (Easter Egg)", "info");
+                    console.log("Debug tools activated");
+                } else {
+                    tool.style.display = 'none';
+                    logMessage("Debug tools hidden", "info");
+                    console.log("Debug tools hidden");
+                }
+            } catch (error) {
+                console.error("Error in toggleSpoofingTool:", error);
+                alert("Error: " + error.message);
+            }
+        }
+        
+        function updateSpoofedUA() {
+            const select = document.getElementById('platform-select');
+            const customInput = document.getElementById('custom-ua-input');
+            
+            if (select.value === 'custom') {
+                customInput.style.display = 'block';
+            } else {
+                customInput.style.display = 'none';
+            }
+        }
+        
+        function applySpoofing() {
+            const select = document.getElementById('platform-select');
+            const customInput = document.getElementById('custom-ua-text');
+            
+            if (select.value === 'custom' && customInput.value.trim()) {
+                spoofedUserAgent = customInput.value.trim();
+            } else if (select.value !== 'original') {
+                spoofedUserAgent = getPresetUserAgent(select.value);
+            } else {
+                spoofedUserAgent = null;
+            }
+            
+            if (spoofedUserAgent) {
+                logMessage("User-Agent spoofed to: " + spoofedUserAgent, "success");
+                updateCurrentUADisplay();
+                
+                // Test platform detection with spoofed UA
+                testPlatformDetection();
+            } else {
+                logMessage("User-Agent reset to original", "success");
+                updateCurrentUADisplay();
+            }
+        }
+        
+        function resetSpoofing() {
+            spoofedUserAgent = null;
+            document.getElementById('platform-select').value = 'original';
+            document.getElementById('custom-ua-input').style.display = 'none';
+            updateCurrentUADisplay();
+            logMessage("User-Agent reset to original", "success");
+        }
+        
+        function getPresetUserAgent(platform) {
+            const presets = {
+                'ios12': 'Mozilla/5.0 (iPad; CPU OS 12_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.3 Mobile/15E148 Safari/604.1',
+                'ios13': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.2 Mobile/15E148 Safari/604.1',
+                'ios14': 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1',
+                'android': 'Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36',
+                'windows': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'macos': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15'
+            };
+            return presets[platform] || originalUserAgent;
+        }
+        
+        function updateCurrentUADisplay() {
+            const currentUA = document.getElementById('current-ua');
+            const displayUA = spoofedUserAgent || originalUserAgent;
+            currentUA.textContent = displayUA;
+            
+            // Add spoofing indicator
+            if (spoofedUserAgent) {
+                currentUA.style.borderLeft = '4px solid #ff6b35';
+                currentUA.style.background = '#fff3cd';
+            } else {
+                currentUA.style.borderLeft = '4px solid #28a745';
+                currentUA.style.background = '#f8f9fa';
+            }
+        }
+        
+        function testPlatformDetection() {
+            const testUA = spoofedUserAgent || originalUserAgent;
+            const isIOS = /iPad|iPhone|iPod/i.test(testUA);
+            const isWebKit = /WebKit/i.test(testUA);
+            
+            logMessage("Platform detection test with spoofed UA:", "info");
+            logMessage("User-Agent: " + testUA, "info");
+            logMessage("iOS detected: " + (isIOS ? "Yes" : "No"), isIOS ? "success" : "error");
+            logMessage("WebKit detected: " + (isWebKit ? "Yes" : "No"), isWebKit ? "success" : "error");
+            
+            if (isIOS && isWebKit) {
+                logMessage("✅ This platform would support jailbreak", "success");
+            } else {
+                logMessage("❌ This platform would NOT support jailbreak", "error");
+            }
+        }
+        
+        // Override navigator.userAgent for spoofing
+        Object.defineProperty(navigator, 'userAgent', {
+            get: function() {
+                return spoofedUserAgent || originalUserAgent;
+            }
+        });
+        
+        // Keyboard shortcut for easter egg (Ctrl+Shift+D)
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                e.preventDefault();
+                toggleSpoofingTool();
+                logMessage("Easter egg activated via keyboard shortcut!", "info");
+            }
+        });
+        
+        // Make function globally available for testing
+        window.toggleSpoofingTool = toggleSpoofingTool;
+        
+        // Test function on page load
+        window.addEventListener('load', () => {
+            console.log("Page loaded, testing toggleSpoofingTool function...");
+            console.log("Function available:", typeof toggleSpoofingTool);
+            console.log("spoofing-tool element:", document.getElementById('spoofing-tool'));
+        });
+    </script>
+</body>
+</html>

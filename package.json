@@ -1,0 +1,39 @@
+{
+  "name": "totally-not-spyware-v2",
+  "version": "2.0.0",
+  "description": "Re-jailbreak utility for devices initially jailbroken with Chimera on iOS 12",
+  "main": "server.py",
+  "scripts": {
+    "start": "python3 server.py",
+    "dev": "python3 server.py",
+    "build": "python3 stages/build.py",
+    "release": "python3 release.py",
+    "install-pwa": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "jailbreak",
+    "ios12",
+    "chimera",
+    "pwa",
+    "webkit-exploit"
+  ],
+  "author": "wh1te4ever",
+  "license": "MIT",
+  "dependencies": {
+    "aiohttp": "^3.8.0",
+    "aiofiles": "^23.0.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0",
+    "python": ">=3.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wh1te4ever/totally-not-spyware-v2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wh1te4ever/totally-not-spyware-v2/issues"
+  },
+  "homepage": "https://github.com/wh1te4ever/totally-not-spyware-v2#readme"
+}

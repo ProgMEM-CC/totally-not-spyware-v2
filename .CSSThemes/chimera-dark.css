@@ -1,0 +1,14 @@
+.theme-chimera.chimera-dark {
+  background: linear-gradient(135deg, #0f172a 0%, #1f2937 100%);
+  --chimera-accent: #35d0bf;
+  color: #e5f8f5;
+}
+.theme-chimera.chimera-dark header.block { background: transparent; border: none; box-shadow: none; }
+.theme-chimera.chimera-dark .time { color: var(--chimera-accent); }
+.theme-chimera.chimera-dark .date { color: #9bd6ff; }
+.theme-chimera.chimera-dark #logo-wrap { border: 2px solid color-mix(in srgb, var(--chimera-accent) 65%, transparent); }
+.theme-chimera.chimera-dark #logo { box-shadow: inset 0 0 0 8px rgba(255,255,255,0.1); }
+.theme-chimera.chimera-dark #slider { background: rgba(0,0,0,0.25); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); padding-bottom: env(safe-area-inset-bottom); }
+.theme-chimera.chimera-dark #well { background: rgba(255,255,255,0.08); border: 2px solid color-mix(in srgb, var(--chimera-accent) 45%, transparent); }
+.theme-chimera.chimera-dark #thumbtack { background: rgba(255,255,255,0.2); border: 2px solid color-mix(in srgb, var(--chimera-accent) 65%, transparent); color: var(--chimera-accent); }
+

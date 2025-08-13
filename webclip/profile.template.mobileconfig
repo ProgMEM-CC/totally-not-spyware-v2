@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>PayloadContent</key>
+  <array>
+    <dict>
+      <key>FullScreen</key><true/>
+      <key>IsRemovable</key><true/>
+      <key>Label</key><string>{{LABEL}}</string>
+      <key>PayloadDescription</key><string>Installs a WebClip to the Home Screen.</string>
+      <key>PayloadDisplayName</key><string>{{LABEL}}</string>
+      <key>PayloadIdentifier</key><string>com.tns.webclip.{{UUID}}</string>
+      <key>PayloadType</key><string>com.apple.webClip</string>
+      <key>PayloadUUID</key><string>{{UUID}}</string>
+      <key>PayloadVersion</key><integer>1</integer>
+      <key>Precomposed</key><true/>
+      <key>URL</key><string>{{URL}}</string>
+    </dict>
+  </array>
+  <key>PayloadDisplayName</key><string>{{LABEL}} WebClip</string>
+  <key>PayloadIdentifier</key><string>com.tns.profile.{{UUID}}</string>
+  <key>PayloadRemovalDisallowed</key><false/>
+  <key>PayloadType</key><string>Configuration</string>
+  <key>PayloadUUID</key><string>{{UUID}}</string>
+  <key>PayloadVersion</key><integer>1</integer>
+</dict>
+</plist>
+
+

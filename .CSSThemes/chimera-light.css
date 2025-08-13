@@ -1,0 +1,30 @@
+.theme-chimera.chimera-light {
+  /* Pastel gradient background */
+  background: linear-gradient(135deg, #dff8ff 0%, #e9f7f0 40%, #f7eaf3 100%);
+  --chimera-accent: #3cc1b2;
+  color: rgba(20,40,50,0.9);
+}
+
+.theme-chimera.chimera-light header.block {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.theme-chimera.chimera-light .time { color: var(--chimera-accent); }
+.theme-chimera.chimera-light .date { color: #7cc6f1; }
+.theme-chimera.chimera-light #logo-wrap { border: 2px solid color-mix(in srgb, var(--chimera-accent) 65%, transparent); }
+.theme-chimera.chimera-light #logo { box-shadow: inset 0 0 0 8px rgba(255,255,255,0.12); }
+
+.theme-chimera.chimera-light #logo-backdrop {
+  background: linear-gradient(135deg, #e7f9fb 0%, #f3eaf0 100%);
+  border-radius: 36px;
+  box-shadow: 0 18px 56px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(255,255,255,0.6);
+}
+.theme-chimera.chimera-light #notice { color: #c7b3ff; }
+.theme-chimera.chimera-light #slider { background: rgba(255,255,255,0.06); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); padding-bottom: env(safe-area-inset-bottom); }
+.theme-chimera.chimera-light #well { background: rgba(255,255,255,0.2); border: 2px solid color-mix(in srgb, var(--chimera-accent) 45%, transparent); }
+.theme-chimera.chimera-light #thumbtack { background: rgba(255,255,255,0.85); border: 2px solid color-mix(in srgb, var(--chimera-accent) 65%, transparent); color: var(--chimera-accent); }
+.theme-chimera.chimera-light #thumbtack::after { color: #ffffff; text-shadow: none; }
+
+

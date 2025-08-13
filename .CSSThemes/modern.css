@@ -1,0 +1,12 @@
+.theme-modern {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+}
+.theme-modern header.block { background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.18); }
+.theme-modern .time { color: #ff6b6b; }
+.theme-modern .date { color: #a5c8ff; }
+.theme-modern #logo-wrap { border: 2px solid rgba(255,255,255,0.55); }
+.theme-modern #slider { background: rgba(0,0,0,0.25); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.theme-modern #well { background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.35); }
+.theme-modern #thumbtack { background: #ff6b6b; }
+

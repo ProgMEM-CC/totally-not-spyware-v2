@@ -1,0 +1,16 @@
+/* Dark/Red theme restored (with new UI rules) */
+.theme-darkred {
+  background: linear-gradient(135deg, #0b0f14 0%, #111827 60%);
+  color: #ffffff;
+}
+.theme-darkred header.block { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); }
+.theme-darkred .time { color: #ff3b3b; }
+.theme-darkred .date { color: #98a8ff; }
+.theme-darkred #logo-wrap { border: 2px solid rgba(255,59,59,0.6); }
+.theme-darkred #slider { background: rgba(0,0,0,0.35); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.theme-darkred #well { background: rgba(255,255,255,0.07); border: 2px solid rgba(255,59,59,0.5); }
+.theme-darkred #thumbtack { background: #ff3b3b; border: 2px solid rgba(255,255,255,0.12); }
+.theme-darkred #thumbtack::after { color: #ffffff; }
+/* Hamburger menu text must be bold white for readability */
+.theme-darkred .theme-menu button, .theme-darkred .theme-menu div, .theme-menu { color: #ffffff; font-weight: 700; }
+

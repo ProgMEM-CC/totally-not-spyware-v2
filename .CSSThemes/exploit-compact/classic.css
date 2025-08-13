@@ -1,0 +1,12 @@
+.theme-classic {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: #ffffff;
+}
+.theme-classic header.block { background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2); }
+.theme-classic .time { color: #ffffff; }
+.theme-classic .date { color: #ffd5d5; }
+.theme-classic #logo-wrap { border: 2px solid rgba(255,255,255,0.6); }
+.theme-classic #slider { background: rgba(0,0,0,0.25); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.theme-classic #well { background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.35); }
+.theme-classic #thumbtack { background: #ffffff; color: #f5576c; }
+

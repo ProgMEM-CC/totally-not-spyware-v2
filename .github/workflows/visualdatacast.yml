@@ -1,0 +1,29 @@
+name: VisualDataCast smoke
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install deps
+        run: |
+          cd tools/visualdatacast
+          npm init -y >/dev/null 2>&1 || true
+          npm i express multer body-parser
+      - name: Node lint (basic)
+        run: |
+          node -e "require('fs').accessSync('tools/visualdatacast/server.js')"
+      - name: Print hint
+        run: |
+          echo "VisualDataCast files present. Run locally:"
+          echo "  node tools/visualdatacast/server.js"
+
+

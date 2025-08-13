@@ -59,6 +59,8 @@ const REMOTE_TO_LOCAL_ICON_MAP = [
 // Install event - cache resources
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
+    // Take control ASAP so first reload is controlled
+    if (self.skipWaiting) self.skipWaiting();
     const core = await caches.open(CACHE_NAME);
     await core.addAll(urlsToCacheRel.map(u => toScopeURL(u)));
     const iconCache = await caches.open(ICON_CACHE);
@@ -80,6 +82,25 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
   const req = event.request;
   const url = new URL(req.url);
+
+  // Ensure navigations always have an offline fallback
+  if (req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html')) {
+    event.respondWith((async () => {
+      const core = await caches.open(CACHE_NAME);
+      try {
+        const res = await fetch(req);
+        // Cache a copy for future offline visits (same-origin only)
+        if (url.origin === location.origin) core.put(req, res.clone());
+        return res;
+      } catch (e) {
+        return (await core.match(toScopeURL('tns-pwa/dist/exploit-compact.html')))
+            || (await core.match(toScopeURL('exploit-compact.html')))
+            || (await core.match(toScopeURL('index.html')))
+            || Response.error();
+      }
+    })());
+    return;
+  }
   // Prefer icon cache for icon requests
   if (url.pathname.includes('/icons/') || /icon-\d+x\d+\.png$/.test(url.pathname)) {
     event.respondWith((async () => {
@@ -129,6 +150,6 @@ self.addEventListener('activate', event => {
     const keep = new Set([CACHE_NAME, ICON_CACHE]);
     const names = await caches.keys();
     await Promise.all(names.map(n => keep.has(n) ? null : caches.delete(n)));
-    self.clients.claim();
+    if (self.clients && self.clients.claim) self.clients.claim();
   })());
 });

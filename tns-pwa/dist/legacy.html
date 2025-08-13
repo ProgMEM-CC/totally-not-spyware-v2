@@ -856,19 +856,7 @@
             <p>⏱️ May take up to 20~30 seconds to build JOP chain and rejailbreak</p>
         </div>
         
-        <div class="status-container">
-            <div class="status-box">
-                <h3>🔌 WebSocket</h3>
-                <p id="ws-status">Disconnected</p>
-            </div>
-            <div class="status-box">
-                <h3>⚡ Ready</h3>
-                <p id="ready-status">No</p>
-            </div>
-        </div>
-        
         <button class="button" onclick="startJailbreak()">🚀 Start Jailbreak</button>
-        <button class="button secondary" onclick="checkStatus()">🔍 Check Status</button>
         
         <div class="easter-egg-trigger">
             <button class="button secondary" onclick="toggleSpoofingTool()" style="font-size: 12px; padding: 8px 16px; opacity: 0.7;">🔧 Debug Tools</button>
@@ -948,17 +936,6 @@
     <script src="../../pwn.js?v=20250813a"></script>
     
     <script>
-        var ws = null;
-        var isReady = false;
-        
-        function updateStatus() {
-            var wsStatus = document.getElementById('ws-status');
-            var readyStatus = document.getElementById('ready-status');
-            
-            if (wsStatus) wsStatus.textContent = ws && ws.readyState === 1 ? 'Connected' : 'Disconnected';
-            if (readyStatus) readyStatus.textContent = isReady ? 'Yes' : 'No';
-        }
-        
         function logMessage(message, type) {
             if (!type) type = 'info';
             
@@ -1000,58 +977,6 @@
                 logContent.classList.remove('collapsed');
                 arrow.classList.remove('collapsed');
                 logContent.style.display = 'block';
-            }
-        }
-        
-        function connectWebSocket() {
-            // Check if we're on a supported platform
-            var userAgent = navigator.userAgent;
-            var isIOS = /iPad|iPhone|iPod/i.test(userAgent);
-            var isWebKit = /WebKit/i.test(userAgent);
-            
-            if (!isIOS || !isWebKit) {
-                logMessage("Platform not supported: " + userAgent, "error");
-                logMessage("This exploit requires iOS WebKit browser", "info");
-                logMessage("WebSocket disabled for non-iOS platforms", "info");
-                updateStatus();
-                return;
-            }
-            
-            // For external access, use the current hostname
-            var protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            var host = window.location.hostname;
-            var wsUrl = protocol + '//' + host + ':8081/WebSocket';
-            
-            // Fallback for local testing
-            if (host === 'localhost' || host === '127.0.0.1') {
-                wsUrl = 'ws://localhost:8081/WebSocket';
-            }
-            
-            try {
-                ws = new WebSocket(wsUrl);
-                
-                ws.onopen = function() {
-                    ws.send("totally-not-spyware-v2");
-                    logMessage("WebSocket connected", "success");
-                    updateStatus();
-                };
-                
-                ws.onclose = function() {
-                    logMessage("WebSocket disconnected", "error");
-                    updateStatus();
-                };
-                
-                ws.onerror = function(error) {
-                    logMessage("WebSocket error: " + error, "error");
-                    updateStatus();
-                };
-                
-                ws.onmessage = function(event) {
-                    logMessage("Received: " + event.data, "info");
-                };
-                
-            } catch (error) {
-                logMessage("WebSocket connection failed: " + error.message, "error");
             }
         }
         
@@ -1261,31 +1186,7 @@
             }
         });
         
-        function checkStatus() {
-            logMessage("Checking system status...", "info");
-            
-            var files = ['pwn.js', 'stages.js', 'offsets.js', 'helper.js', 'utils.js'];
-            var missingFiles = [];
-            
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                var script = document.querySelector('script[src="' + file + '"]');
-                if (!script) {
-                    missingFiles.push(file);
-                    logMessage("Script tag not found: " + file, "error");
-                } else {
-                    logMessage("Script tag found: " + file, "success");
-                }
-            }
-            
-            if (missingFiles.length > 0) {
-                logMessage("Missing files: " + missingFiles.join(', '), "error");
-            } else {
-                logMessage("All required files loaded", "success");
-                isReady = true;
-                updateStatus();
-            }
-        }
+        // Removed legacy Check Status and WebSocket utilities
         
         function toggleTheme() {
             var body = document.body;
@@ -1414,18 +1315,7 @@
         
         function initializeApp() {
             logMessage("App initialized (Legacy Mode)", "info");
-            
-            // Set Chimera Theme as default
             activateChimera();
-            
-            connectWebSocket();
-            checkStatus();
-            
-            setInterval(function() {
-                if (ws && ws.readyState === 1) {
-                    updateStatus();
-                }
-            }, 5000);
         }
         
         if ('serviceWorker' in navigator) {

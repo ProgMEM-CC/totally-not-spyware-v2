@@ -26,6 +26,60 @@
     <true/>
     <key>UILaunchStoryboardName</key>
     <string>LaunchScreen</string>
+    
+    <!-- PWA Specific Settings -->
+    <key>UIStatusBarHidden</key>
+    <true/>
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <false/>
+    <key>UIRequiresFullScreen</key>
+    <true/>
+    <key>UIStatusBarStyle</key>
+    <string>UIStatusBarStyleLightContent</string>
+    
+    <!-- App Icon Settings -->
+    <key>CFBundleIcons</key>
+    <dict>
+        <key>CFBundlePrimaryIcon</key>
+        <dict>
+            <key>CFBundleIconFiles</key>
+            <array>
+                <string>AppIcon</string>
+            </array>
+            <key>CFBundleIconName</key>
+            <string>AppIcon</string>
+        </dict>
+    </dict>
+    
+    <!-- Launch Screen Settings -->
+    <key>UILaunchImages</key>
+    <array>
+        <dict>
+            <key>UILaunchImageName</key>
+            <string>LaunchImage</string>
+            <key>UILaunchImageSize</key>
+            <string>{320, 568}</string>
+        </dict>
+        <dict>
+            <key>UILaunchImageName</key>
+            <string>LaunchImage</string>
+            <key>UILaunchImageSize</key>
+            <string>{375, 667}</string>
+        </dict>
+        <dict>
+            <key>UILaunchImageName</key>
+            <string>LaunchImage</string>
+            <key>UILaunchImageSize</key>
+            <string>{414, 736}</string>
+        </dict>
+        <dict>
+            <key>UILaunchImageName</key>
+            <string>LaunchImage</string>
+            <key>UILaunchImageSize</key>
+            <string>{768, 1024}</string>
+        </dict>
+    </array>
+    
     <key>UIRequiredDeviceCapabilities</key>
     <array>
         <string>armv7</string>
@@ -43,6 +97,8 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
+    
+    <!-- Network Security for PWA -->
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsArbitraryLoads</key>
@@ -54,7 +110,21 @@
                 <key>NSExceptionAllowsInsecureHTTPLoads</key>
                 <true/>
             </dict>
+            <key>totally.not.spyware.lol</key>
+                <dict>
+                    <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                    <true/>
+                    <key>NSExceptionMinimumTLSVersion</key>
+                    <string>TLSv1.0</string>
+                </dict>
         </dict>
     </dict>
+    
+    <!-- PWA Manifest Support -->
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>https</string>
+        <string>http</string>
+    </array>
 </dict>
 </plist>

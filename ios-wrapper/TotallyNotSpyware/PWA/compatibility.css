@@ -1,0 +1,466 @@
+/* 100% iOS 12 Safari Compatibility CSS */
+
+/* ===== CSS VARIABLES WITH FALLBACKS ===== */
+:root {
+  /* Primary colors */
+  --primary-color: #ff6b6b;
+  --secondary-color: #4ecdc4;
+  --accent-color: #45b7d1;
+  
+  /* Background colors */
+  --background-primary: #1a1a1a;
+  --background-secondary: #2d2d2d;
+  --background-tertiary: #404040;
+  
+  /* Text colors */
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-muted: #999999;
+  
+  /* Border colors */
+  --border-color: #555555;
+  --border-light: #777777;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  /* Shadows */
+  --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.2);
+  --shadow-heavy: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== SAFARI 12 SPECIFIC FIXES ===== */
+.safari12 {
+  /* Safari 12 specific overrides */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  
+  /* Fix for Safari 12 rendering issues */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  
+  /* Fix for Safari 12 font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.safari12 * {
+  /* Ensure proper box-sizing in Safari 12 */
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+/* ===== UNIVERSAL RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  line-height: 1.5;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background: #1a1a1a; /* Fallback */
+  background: var(--background-primary, #1a1a1a);
+  color: #ffffff; /* Fallback */
+  color: var(--text-primary, #ffffff);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ===== UNIVERSAL BUTTON STYLES ===== */
+.button, button {
+  /* Basic properties that work everywhere */
+  display: inline-block;
+  width: auto;
+  height: auto;
+  min-height: 44px; /* iOS minimum touch target */
+  min-width: 44px;
+  padding: 12px 20px;
+  margin: 5px;
+  border: 2px solid #ff6b6b; /* Fallback */
+  border: 2px solid var(--primary-color, #ff6b6b);
+  background: #ff6b6b; /* Fallback */
+  background: var(--primary-color, #ff6b6b);
+  color: #ffffff; /* Fallback */
+  color: var(--text-primary, #ffffff);
+  text-align: center;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  vertical-align: middle;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Button states */
+.button:hover, button:hover {
+  background: #ff8a8a; /* Fallback */
+  background: var(--secondary-color, #ff8a8a);
+  border-color: #ff8a8a; /* Fallback */
+  border-color: var(--secondary-color, #ff8a8a);
+}
+
+.button:active, button:active {
+  background: #ff5252; /* Fallback */
+  background: var(--accent-color, #ff5252);
+  border-color: #ff5252; /* Fallback */
+  border-color: var(--accent-color, #ff5252);
+}
+
+.button:focus, button:focus {
+  outline: 2px solid #4ecdc4; /* Fallback */
+  outline: 2px solid var(--secondary-color, #4ecdc4);
+  outline-offset: 2px;
+}
+
+/* Secondary button */
+.button.secondary, button.secondary {
+  background: transparent;
+  color: #ff6b6b; /* Fallback */
+  color: var(--primary-color, #ff6b6b);
+}
+
+.button.secondary:hover, button.secondary:hover {
+  background: #ff6b6b; /* Fallback */
+  background: var(--primary-color, #ff6b6b);
+  color: #ffffff; /* Fallback */
+  color: var(--text-primary, #ffffff);
+}
+
+/* ===== UNIVERSAL LAYOUT ===== */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* ===== FLEXBOX WITH FALLBACKS ===== */
+.flex-container {
+  /* Fallback for older browsers */
+  display: block;
+  text-align: center;
+}
+
+/* Modern browsers */
+@supports (display: flex) {
+  .flex-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+  }
+}
+
+.flex-row {
+  /* Fallback */
+  display: block;
+}
+
+@supports (display: flex) {
+  .flex-row {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+.flex-column {
+  /* Fallback */
+  display: block;
+}
+
+@supports (display: flex) {
+  .flex-column {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* ===== GRID WITH FALLBACKS ===== */
+.grid-container {
+  /* Fallback */
+  display: block;
+}
+
+@supports (display: grid) {
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+}
+
+/* ===== CARD STYLES ===== */
+.card {
+  background: #2d2d2d; /* Fallback */
+  background: var(--background-secondary, #2d2d2d);
+  border: 1px solid #555555; /* Fallback */
+  border: 1px solid var(--border-color, #555555);
+  padding: 16px;
+  margin: 8px 0;
+  border-radius: 8px; /* Fallback */
+  border-radius: var(--radius-md, 8px);
+}
+
+/* ===== FORM ELEMENTS ===== */
+input, select, textarea {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #555555; /* Fallback */
+  border: 1px solid var(--border-color, #555555);
+  background: #2d2d2d; /* Fallback */
+  background: var(--background-secondary, #2d2d2d);
+  color: #ffffff; /* Fallback */
+  color: var(--text-primary, #ffffff);
+  font-size: 16px; /* Prevents iOS zoom */
+  font-family: inherit;
+  border-radius: 4px; /* Fallback */
+  border-radius: var(--radius-sm, 4px);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid #4ecdc4; /* Fallback */
+  outline: 2px solid var(--secondary-color, #4ecdc4);
+  outline-offset: 2px;
+  border-color: #4ecdc4; /* Fallback */
+  border-color: var(--secondary-color, #4ecdc4);
+}
+
+/* ===== SCROLLING OPTIMIZATION ===== */
+.scrollable, .log-container {
+  max-height: 400px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
+  scrollbar-width: thin;
+  scrollbar-color: #555555 #2d2d2d;
+}
+
+/* Webkit scrollbar styling */
+.scrollable::-webkit-scrollbar,
+.log-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable::-webkit-scrollbar-track,
+.log-container::-webkit-scrollbar-track {
+  background: #2d2d2d; /* Fallback */
+  background: var(--background-secondary, #2d2d2d);
+}
+
+.scrollable::-webkit-scrollbar-thumb,
+.log-container::-webkit-scrollbar-thumb {
+  background: #555555; /* Fallback */
+  background: var(--border-color, #555555);
+  border-radius: 4px;
+}
+
+/* ===== THEME TOGGLE ===== */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: #2d2d2d; /* Fallback */
+  background: var(--background-secondary, #2d2d2d);
+  border: 1px solid #555555; /* Fallback */
+  border: 1px solid var(--border-color, #555555);
+  color: #ffffff; /* Fallback */
+  color: var(--text-primary, #ffffff);
+  padding: 8px 12px;
+  border-radius: 4px; /* Fallback */
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 12px;
+  }
+  
+  .button, button {
+    width: 100%;
+    margin: 4px 0;
+  }
+  
+  .card {
+    margin: 4px 0;
+  }
+}
+
+/* ===== iOS 12 SPECIFIC OPTIMIZATIONS ===== */
+.ios12 .button,
+.ios12 button {
+  /* Remove any problematic properties */
+  transform: none;
+  transition: none;
+  box-shadow: none;
+}
+
+.ios12 .card {
+  /* Simplify for iOS 12 */
+  box-shadow: none;
+  border: 1px solid #555555;
+}
+
+/* ===== SAFARI 12 SPECIFIC OPTIMIZATIONS ===== */
+.safari12 .button,
+.safari12 button {
+  /* Safari 12 button optimizations */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  
+  /* Fix for Safari 12 button rendering */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.safari12 .card {
+  /* Safari 12 card optimizations */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  
+  /* Fix for Safari 12 border rendering */
+  border: 1px solid #555555;
+}
+
+.safari12 input,
+.safari12 select,
+.safari12 textarea {
+  /* Safari 12 form element fixes */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  
+  /* Fix for Safari 12 input rendering */
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .button, button, .theme-toggle {
+    display: none;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+@media (prefers-contrast: high) {
+  .button, button {
+    border-width: 3px;
+  }
+  
+  input, select, textarea {
+    border-width: 2px;
+  }
+}
+
+/* ===== DARK MODE SUPPORT ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-primary: #000000;
+    --background-secondary: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+  }
+}
+
+/* ===== LIGHT MODE SUPPORT ===== */
+@media (prefers-color-scheme: light) {
+  :root {
+    --background-primary: #ffffff;
+    --background-secondary: #f5f5f5;
+    --text-primary: #000000;
+    --text-secondary: #333333;
+  }
+}
+
+/* ===== SAFARI 12 PERFORMANCE OPTIMIZATIONS ===== */
+.safari12 .scrollable,
+.safari12 .log-container {
+  /* Safari 12 scroll optimizations */
+  -webkit-overflow-scrolling: touch;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  
+  /* Fix for Safari 12 scrollbar rendering */
+  scrollbar-width: thin;
+}
+
+/* Safari 12 specific viewport fixes */
+.safari12 body {
+  /* Fix for Safari 12 viewport issues */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  
+  /* Fix for Safari 12 font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Safari 12 CSS variable fallback system */
+.no-css-vars .button {
+  background: #ff6b6b;
+  border-color: #ff6b6b;
+  color: #ffffff;
+}
+
+.no-css-vars .card {
+  background: #2d2d2d;
+  border: 1px solid #555555;
+}
+
+.no-css-vars input,
+.no-css-vars select,
+.no-css-vars textarea {
+  background: #2d2d2d;
+  border: 1px solid #555555;
+  color: #ffffff;
+}

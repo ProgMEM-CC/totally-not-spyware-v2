@@ -8,5 +8,9 @@ function send(data) {
 
 function log(msg) {
 	send(msg === undefined ? 'undefined' : msg.toString());
-	document.getElementById("log").innerHTML += ""+msg+"</br>";
+	var el = null;
+	try { el = document.getElementById("log"); } catch(_) {}
+	var text = (msg === undefined ? 'undefined' : (""+msg));
+	if (el) { el.innerHTML += text + "</br>"; }
+	try { if (window.activityLog) window.activityLog.push(text); } catch(_) {}
 }

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Port Launcher</title>
+    <style>
+        :root { --bg: #0f172a; --card: #111827; --fg: #e5f2ef; --accent: #3cc1b2; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto, sans-serif; background: linear-gradient(135deg,#dff8ff,#f7eaf3); min-height: 100vh; display: grid; place-items: center; }
+        .card { background: rgba(255,255,255,0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 20px; width: min(560px, 92vw); box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
+        h1 { margin: 0 0 12px; font-size: 18px; color: #0e221e; }
+        label { display: block; font-weight: 700; color: #355a54; margin-top: 10px; }
+        input, select { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.12); background: #fff; font-size: 14px; }
+        .row { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; }
+        .actions { display: flex; gap: 10px; margin-top: 14px; align-items: center; }
+        button { padding: 10px 14px; border: 0; border-radius: 12px; font-weight: 800; cursor: pointer; }
+        .go { background: var(--accent); color: #002a25; }
+        .new { background: #0f172a; color: #e5f2ef; }
+        .list { margin-top: 6px; font-size: 12px; color: #355a54; }
+        .hint { margin-top: 10px; font-size: 12px; color: #53676d; }
+        .links { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+        .links a { padding: 6px 10px; background: #ffffff; border: 1px solid rgba(0,0,0,0.1); border-radius: 999px; text-decoration: none; color: #045a50; font-weight: 700; }
+        .ctrls { margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(0,0,0,0.15); }
+        .cmd { margin-top: 8px; background: #0f172a; color: #e5f2ef; padding: 10px; border-radius: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; white-space: nowrap; overflow:auto; }
+        .copy { background: #e5f2ef; color: #0f172a; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Quick Port Launcher</h1>
+        <div class="row">
+            <div>
+                <label for="port">Port</label>
+                <input id="port" type="number" min="1" step="1" />
+            </div>
+            <div>
+                <label for="path">Path (relative)</label>
+                <input id="path" type="text" value="tns-pwa/dist/exploit-compact.html" />
+            </div>
+        </div>
+        <div class="actions">
+            <button class="go" id="openSame">Open here</button>
+            <button class="new" id="openNew">Open in new tab</button>
+            <button class="copy" id="showCmd">Show restart/kill command</button>
+        </div>
+        <div class="list">Examples: tns-pwa/dist/exploit-compact.html, tns-pwa/dist/legacy.html, tns-pwa/dist/index.html</div>
+        <div class="links">
+            <a href="#" data-path="tns-pwa/dist/exploit-compact.html">Exploit Compact</a>
+            <a href="#" data-path="tns-pwa/dist/legacy.html">Legacy</a>
+            <a href="#" data-path="tns-pwa/dist/index.html">Index</a>
+            <a href="#" data-path="tns-pwa/dist/compatibility-test.html">Compat Test</a>
+        </div>
+        <div class="hint">Tip: Enter only the port number. We build http://127.0.0.1:&lt;port&gt;/&lt;path&gt; for you. Remembers last entries.</div>
+        <div class="ctrls" id="ctrls" style="display:none;">
+            <div>Run this in PowerShell to kill any existing server on the chosen port and start a fresh one (non-interactive):</div>
+            <div class="cmd" id="cmdBox"></div>
+            <div class="actions">
+                <button class="copy" id="copyCmd">Copy command</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            var portInput = document.getElementById('port');
+            var pathInput = document.getElementById('path');
+            var lastPort = localStorage.getItem('quick-port') || '8080';
+            portInput.value = lastPort;
+            var lastPath = localStorage.getItem('quick-path') || pathInput.value;
+            pathInput.value = lastPath;
+
+            function buildUrl(){
+                var p = portInput.value.trim();
+                var rel = pathInput.value.trim().replace(/^\/+/, '');
+                localStorage.setItem('quick-port', p);
+                localStorage.setItem('quick-path', rel);
+                return 'http://127.0.0.1:' + p + '/' + rel;
+            }
+
+            document.getElementById('openSame').addEventListener('click', function(){ location.href = buildUrl(); });
+            document.getElementById('openNew').addEventListener('click', function(){ window.open(buildUrl(), '_blank'); });
+            portInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') document.getElementById('openSame').click(); });
+            pathInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') document.getElementById('openSame').click(); });
+            document.querySelectorAll('.links a').forEach(function(a){
+                a.addEventListener('click', function(e){ e.preventDefault(); pathInput.value = a.dataset.path; });
+            });
+
+            function buildRestartCommand(){
+                var p = portInput.value.trim();
+                // One-liner PowerShell: kill http.server and start new on specified port
+                var cmd = '$procs=Get-CimInstance Win32_Process | Where-Object { ($_.Name -match \"python\" -or $_.Name -match \"python3\") -and $_.CommandLine -match \"http.server\" }; foreach ($p in $procs) { try { Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue } catch {} }; Start-Process -NoNewWindow python \"-m http.server ' + p + ' --bind 127.0.0.1\"; Write-Output \"Serving http://127.0.0.1:' + p + '/\"';
+                return cmd;
+            }
+
+            document.getElementById('showCmd').addEventListener('click', function(){
+                var c = document.getElementById('ctrls');
+                var b = document.getElementById('cmdBox');
+                b.textContent = buildRestartCommand();
+                c.style.display = 'block';
+            });
+            document.getElementById('copyCmd').addEventListener('click', function(){
+                var b = document.getElementById('cmdBox');
+                navigator.clipboard.writeText(b.textContent).then(function(){});
+            });
+        })();
+    </script>
+</body>
+</html>
+
+

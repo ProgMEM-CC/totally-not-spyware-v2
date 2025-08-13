@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Drag Test (Hidden)</title>
+	<style>
+		/* Styles for the draggable element */
+		.draggable-item {
+			width: 150px;
+			height: 80px;
+			background-color: #3498db;
+			color: white;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 8px;
+			cursor: grab; /* Indicates the element is draggable */
+			position: absolute; /* Allows positioning with top/left properties */
+			box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+			transition: box-shadow 0.1s ease-in-out; /* Smooth transition for shadow */
+			user-select: none;
+			-webkit-user-select: none;
+		}
+
+		/* Styles applied when the element is being dragged */
+		.draggable-item.dragging {
+			cursor: grabbing; /* Changes cursor during drag */
+			z-index: 1000; /* Brings the dragged element to the front */
+			box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4); /* Enhanced shadow during drag */
+		}
+
+		/* Optional: Styles for a drop zone */
+		.drop-zone {
+			width: 300px;
+			height: 200px;
+			border: 2px dashed #ccc;
+			background-color: #f9f9f9;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin-top: 50px;
+			border-radius: 12px;
+		}
+		.drop-zone.hit { border-color: #2ecc71; background-color: #eefaf3; }
+
+		.container { position: relative; min-height: 80vh; padding: 24px; }
+		.back { position: fixed; right: 12px; top: 12px; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+		.back a { color: #3498db; text-decoration: none; font-weight: 600; }
+	</style>
+</head>
+<body>
+	<div class="back">
+		<a href="/tns-pwa/dist/exploit-compact.html">← Back to app</a>
+	</div>
+	<div class="container">
+		<div id="item" class="draggable-item" style="left: 20px; top: 20px;">Drag me</div>
+		<div id="zone" class="drop-zone">Drop zone</div>
+	</div>
+
+	<script>
+	(function(){
+		var item = document.getElementById('item');
+		var zone = document.getElementById('zone');
+		var dragging = false, startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+
+		function getLeftTop(el){
+			return {
+				left: parseInt(el.style.left || '0', 10),
+				top: parseInt(el.style.top || '0', 10)
+			};
+		}
+
+		function startDrag(x, y){
+			dragging = true;
+			item.classList.add('dragging');
+			var pos = getLeftTop(item);
+			offsetX = x - pos.left;
+			offsetY = y - pos.top;
+		}
+
+		function moveDrag(x, y){
+			if (!dragging) return;
+			var left = x - offsetX;
+			var top = y - offsetY;
+			item.style.left = left + 'px';
+			item.style.top = top + 'px';
+			checkHit();
+		}
+
+		function endDrag(){
+			dragging = false;
+			item.classList.remove('dragging');
+		}
+
+		function checkHit(){
+			var a = item.getBoundingClientRect();
+			var b = zone.getBoundingClientRect();
+			var overlap = !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+			zone.classList.toggle('hit', overlap);
+		}
+
+		// Mouse
+		item.addEventListener('mousedown', function(e){ startDrag(e.clientX, e.clientY); });
+		document.addEventListener('mousemove', function(e){ moveDrag(e.clientX, e.clientY); });
+		document.addEventListener('mouseup', function(){ endDrag(); });
+
+		// Touch
+		item.addEventListener('touchstart', function(e){
+			var t = e.touches[0]; startDrag(t.clientX, t.clientY); e.preventDefault();
+		}, {passive:false});
+		document.addEventListener('touchmove', function(e){
+			if (!dragging) return; var t = e.touches[0]; moveDrag(t.clientX, t.clientY); e.preventDefault();
+		}, {passive:false});
+		document.addEventListener('touchend', function(){ endDrag(); });
+	})();
+	</script>
+</body>
+</html>
+
+

@@ -1,0 +1,11 @@
+{
+  "name": "porttool.native",
+  "description": "Port Tool Native Host",
+  "path": "C:\\Users\\RIZALINA\\.cursor\\Repos\\totally-not-spyware-v2\\native-host\\porttool_native.py",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://REPLACE_WITH_EXTENSION_ID/"
+  ]
+}
+
+

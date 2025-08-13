@@ -1,56 +1,126 @@
-const CACHE_NAME = 'tns-v2-cache-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/utils.js',
-  '/helper.js',
-  '/int64.js',
-  '/stages.js',
-  '/offsets.js',
-  '/pwn.js',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+const CACHE_NAME = 'tns-v2-cache-v2';
+const ICON_CACHE = 'tns-v2-icons-v1';
+
+// Core files + pages (relative to SW scope)
+const urlsToCacheRel = [
+  'index.html',
+  'exploit-compact.html',
+  'tns-pwa/dist/exploit-compact.html',
+  'legacy.html',
+  'manifest.json',
+  'utils.js',
+  'helper.js',
+  'int64.js',
+  'stages.js',
+  'offsets.js',
+  'pwn.js',
+  'icons/icon-192x192.png',
+  'icons/icon-512x512.png',
+  'icons/TotallyNotSpyware.png'
+];
+
+// Local icons we want available offline
+const ICONS_TO_PRECACHE_REL = [
+  'icons/icon-60x60.png',
+  'icons/icon-76x76.png',
+  'icons/icon-120x120.png',
+  'icons/icon-152x152.png',
+  'icons/icon-167x167.png',
+  'icons/icon-180x180.png'
+];
+
+// External icon fallbacks (opaque responses are fine to cache)
+const EXTERNAL_ICONS = [
+  'https://totally.not.spyware.lol/img/amazing.png',
+  'https://raw.githubusercontent.com/wh1te4ever/totally-not-spyware-v2/0d1bf6d0ea35f6726d83c3da758308444cf8d16f/icons/icon-60x60.png',
+  'https://raw.githubusercontent.com/wh1te4ever/totally-not-spyware-v2/0d1bf6d0ea35f6726d83c3da758308444cf8d16f/icons/icon-76x76.png',
+  'https://raw.githubusercontent.com/wh1te4ever/totally-not-spyware-v2/0d1bf6d0ea35f6726d83c3da758308444cf8d16f/icons/icon-120x120.png',
+  'https://raw.githubusercontent.com/wh1te4ever/totally-not-spyware-v2/0d1bf6d0ea35f6726d83c3da758308444cf8d16f/icons/icon-152x152.png',
+  'https://raw.githubusercontent.com/wh1te4ever/totally-not-spyware-v2/0d1bf6d0ea35f6726d83c3da758308444cf8d16f/icons/icon-167x167.png',
+  'https://raw.githubusercontent.com/wh1te4ever/totally-not-spyware-v2/0d1bf6d0ea35f6726d83c3da758308444cf8d16f/icons/icon-180x180.png'
+];
+
+// Map remote icons into local cache keys so pages can always reference local paths
+const REMOTE_TO_LOCAL_ICON_MAP = [
+  ['icons/icon-60x60.png', 'https://raw.githubusercontent.com/wh1te4ever/totally-not-spyware-v2/0d1bf6d0ea35f6726d83c3da758308444cf8d16f/icons/icon-60x60.png'],
+  ['icons/icon-76x76.png', 'https://raw.githubusercontent.com/wh1te4ever/totally-not-spyware-v2/0d1bf6d0ea35f6726d83c3da758308444cf8d16f/icons/icon-76x76.png'],
+  ['icons/icon-120x120.png', 'https://raw.githubusercontent.com/wh1te4ever/totally-not-spyware-v2/0d1bf6d0ea35f6726d83c3da758308444cf8d16f/icons/icon-120x120.png'],
+  ['icons/icon-152x152.png', 'https://raw.githubusercontent.com/wh1te4ever/totally-not-spyware-v2/0d1bf6d0ea35f6726d83c3da758308444cf8d16f/icons/icon-152x152.png'],
+  ['icons/icon-167x167.png', 'https://raw.githubusercontent.com/wh1te4ever/totally-not-spyware-v2/0d1bf6d0ea35f6726d83c3da758308444cf8d16f/icons/icon-167x167.png'],
+  ['icons/icon-180x180.png', 'https://raw.githubusercontent.com/wh1te4ever/totally-not-spyware-v2/0d1bf6d0ea35f6726d83c3da758308444cf8d16f/icons/icon-180x180.png'],
+  ['icons/TotallyNotSpyware.png', 'https://totally.not.spyware.lol/img/amazing.png']
 ];
 
 // Install event - cache resources
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
+  event.waitUntil((async () => {
+    const core = await caches.open(CACHE_NAME);
+    await core.addAll(urlsToCacheRel.map(u => new URL(u, location.origin)));
+    const iconCache = await caches.open(ICON_CACHE);
+    // Precache local icons
+    await iconCache.addAll(ICONS_TO_PRECACHE_REL.map(u => new URL(u, location.origin)));
+    // Try to precache external icons (ignore CORS/opaque concerns)
+    await Promise.allSettled(EXTERNAL_ICONS.map(u => iconCache.add(u).catch(()=>null)));
+    // Populate remote icons under local keys for reliable same-origin access
+    await Promise.allSettled(REMOTE_TO_LOCAL_ICON_MAP.map(async ([localPath, remoteUrl]) => {
+      try {
+        const res = await fetch(remoteUrl, { mode: 'no-cors' });
+        await iconCache.put(new URL(localPath, location.origin), res.clone());
+      } catch (_) { /* ignore */ }
+    }));
+  })());
 });
 
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Return cached version or fetch from network
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
+  const req = event.request;
+  const url = new URL(req.url);
+  // Prefer icon cache for icon requests
+  if (url.pathname.includes('/icons/') || /icon-\d+x\d+\.png$/.test(url.pathname)) {
+    event.respondWith((async () => {
+      const iconCache = await caches.open(ICON_CACHE);
+      const cached = await iconCache.match(req, { ignoreVary: true, ignoreSearch: true });
+      if (cached) return cached;
+      try {
+        const res = await fetch(req, { mode: 'no-cors' });
+        // Cache opaque or normal responses
+        iconCache.put(req, res.clone());
+        return res;
+      } catch (e) {
+        // Fallback to core cache
+        const core = await caches.open(CACHE_NAME);
+        const fallback = await core.match('/icons/TotallyNotSpyware.png');
+        return fallback || Response.error();
       }
-    )
-  );
+    })());
+    return;
+  }
+
+  // Default: cache-first for core files, else network-first
+  event.respondWith((async () => {
+    const core = await caches.open(CACHE_NAME);
+    const cached = await core.match(req);
+    if (cached) return cached;
+    try {
+      const res = await fetch(req);
+      // Opportunistically cache GETs under same-origin
+      if (req.method === 'GET' && url.origin === location.origin) {
+        core.put(req, res.clone());
+      }
+      return res;
+    } catch (e) {
+      // Offline fallback to index or exploit-compact
+      return (await core.match('/exploit-compact.html')) || (await core.match('/index.html')) || Response.error();
+    }
+  })());
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
+  event.waitUntil((async () => {
+    const keep = new Set([CACHE_NAME, ICON_CACHE]);
+    const names = await caches.keys();
+    await Promise.all(names.map(n => keep.has(n) ? null : caches.delete(n)));
+    self.clients.claim();
+  })());
 });

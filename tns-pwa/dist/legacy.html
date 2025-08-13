@@ -659,6 +659,11 @@
             overflow-y: scroll;
             text-align: left;
         }
+        .status-row { display:flex; align-items:center; gap:8px; margin: 8px 0 6px; }
+        .status-badge { display:inline-block; padding: 4px 8px; border-radius: 999px; font-weight: 800; font-size: 12px; }
+        .status-live { background: rgba(16,185,129,.18); border:1px solid rgba(16,185,129,.45); color:#34d399; }
+        .status-cached { background: rgba(99,102,241,.18); border:1px solid rgba(99,102,241,.45); color:#a5b4fc; }
+        .status-unknown { background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); color:#fff; opacity:.85; }
         /* Collapsible header */
         .log-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
         .log-header h3 { margin: 0; color: #74c0fc; font-size: 20px; font-weight: 800; }
@@ -874,6 +879,10 @@
                 <h3>📋 Activity Log</h3>
                 <span class="log-toggle collapsed">▶</span>
             </div>
+            <div class="status-row">
+                <span id="liveStatusBadgeLegacy" class="status-badge status-unknown">Detecting…</span>
+                <small id="liveStatusNoteLegacy" style="opacity:.8"></small>
+            </div>
             <div id="log" class="log-content"></div>
         </div>
         
@@ -978,6 +987,25 @@
                 arrow.classList.remove('collapsed');
                 logContent.style.display = 'block';
             }
+        }
+
+        function detectLiveStatusLegacy(){
+            try {
+                var badgeEl = document.getElementById('liveStatusBadgeLegacy');
+                var noteEl = document.getElementById('liveStatusNoteLegacy');
+                if (!badgeEl || !noteEl) return;
+                var isLocal = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+                var swControlled = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
+                var hasBuster = /[?&]v=|[?&]_ts=/.test(location.search);
+                var live = isLocal || hasBuster || (!swControlled);
+                var cls = live ? 'status-live' : (swControlled ? 'status-cached' : 'status-unknown');
+                var label = live ? 'LIVE' : (swControlled ? 'CACHED' : 'UNKNOWN');
+                badgeEl.className = 'status-badge ' + cls;
+                badgeEl.textContent = label;
+                if (live) noteEl.textContent = isLocal ? 'Serving directly from localhost' : 'Fresh network fetch (or cache-busted)';
+                else if (swControlled) noteEl.textContent = 'Served by Service Worker cache (offline/fast)';
+                else noteEl.textContent = 'Could not determine source';
+            } catch(_){}
         }
         
         function startJailbreak() {
@@ -1263,6 +1291,7 @@
         function initializeApp() {
             logMessage("App initialized (Legacy Mode)", "info");
             activateChimera();
+            detectLiveStatusLegacy();
             selfCheck();
         }
         

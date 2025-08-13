@@ -981,99 +981,46 @@
         }
         
         function startJailbreak() {
-            // Check platform compatibility first
             var userAgent = navigator.userAgent;
             var isIOS = /iPad|iPhone|iPod/i.test(userAgent);
             var isWebKit = /WebKit/i.test(userAgent);
-            
             if (!isIOS || !isWebKit) {
                 logMessage("Jailbreak failed: Platform not supported", "error");
-                logMessage("This exploit requires iOS WebKit browser", "info");
-                logMessage("Current platform: " + userAgent, "info");
+                logMessage("Requires iOS WebKit. Current: " + userAgent, "info");
                 return;
             }
-            
             if (typeof pwn === 'function') {
-                logMessage("Starting jailbreak process...", "info");
-                
-                // Show first popup: "Building JOP chain, executing stages payload!"
-                showPopup("Building JOP chain, executing stages payload!", "close", function() {
-                    // After clicking close, actually start the JOP chain
-                    logMessage("JOP chain building started", "info");
-                    logMessage("This may take 20-30 seconds...", "info");
-                    
-                    try {
-                        pwn();
-                        logMessage("JOP chain execution initiated", "success");
-                        
-                        // Simulate JOP chain completion after delay
-                        setTimeout(function() {
-                            showCompletionPopup();
-                        }, 25000); // 25 seconds to simulate JOP chain
-                        
-                    } catch (error) {
-                        logMessage("Jailbreak error: " + error.message, "error");
-                    }
-                });
-                
+                logMessage("Starting jailbreak...", "info");
+                try { pwn(); logMessage("Exploit triggered", "success"); }
+                catch (error) { logMessage("Jailbreak error: " + error.message, "error"); }
             } else {
                 logMessage("Jailbreak function not available", "error");
             }
         }
         
-        function showPopup(message, buttonText, callback) {
-            var popup = document.createElement('div');
-            popup.className = 'popup-overlay';
-            popup.innerHTML = `
-                <div class="popup-content">
-                    <h3>${message}</h3>
-                    <button class="popup-button" onclick="closePopupAndExecute()">${buttonText}</button>
-                </div>
-            `;
-            document.body.appendChild(popup);
-            
-            // Store callback for execution
-            popup.callback = callback;
-            
-            // Function to close popup and execute callback
-            window.closePopupAndExecute = function() {
-                popup.remove();
-                if (popup.callback) {
-                    popup.callback();
+        // Self-check on load
+        function selfCheck(){
+            try {
+                logMessage("Running self-check...", "info");
+                var scripts = Array.prototype.slice.call(document.querySelectorAll('script[src]')).map(function(s){ return s.src; });
+                function present(name){ return scripts.some(function(s){ return s.indexOf(name) !== -1; }); }
+                var files = ['pwn.js','stages.js','offsets.js','int64.js','helper.js','utils.js'];
+                for (var i=0;i<files.length;i++){
+                    var ok = present(files[i]);
+                    logMessage((ok? '✔ ':'✖ ') + files[i], ok ? 'success' : 'error');
                 }
-            };
-        }
-        
-        function showCompletionPopup() {
-            var popup = document.createElement('div');
-            popup.className = 'popup-overlay';
-            popup.innerHTML = `
-                <div class="popup-content">
-                    <h3>re-jailbreak done</h3>
-                    <p>Choose userspace reboot or stay</p>
-                    <div class="popup-buttons">
-                        <button class="popup-button primary" onclick="userspaceReboot()">userspace reboot</button>
-                        <button class="popup-button secondary" onclick="stayInJailbreak()">stay</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(popup);
-        }
-        
-        function userspaceReboot() {
-            logMessage("Userspace reboot selected", "info");
-            logMessage("Device will reboot to complete jailbreak", "success");
-            // Remove popup
-            var popup = document.querySelector('.popup-overlay');
-            if (popup) popup.remove();
-        }
-        
-        function stayInJailbreak() {
-            logMessage("Stay option selected", "info");
-            logMessage("Jailbreak completed successfully", "success");
-            // Remove popup
-            var popup = document.querySelector('.popup-overlay');
-            if (popup) popup.remove();
+                var hasPwn = (typeof window.pwn === 'function');
+                logMessage('window.pwn: ' + (hasPwn ? 'available' : 'missing'), hasPwn ? 'success' : 'error');
+                var ua = navigator.userAgent;
+                var isIOS = /iPad|iPhone|iPod/i.test(ua);
+                var isWebKit = /WebKit/i.test(ua);
+                logMessage('Platform: iOS=' + (isIOS?'true':'false') + ' WebKit=' + (isWebKit?'true':'false'), (isIOS && isWebKit) ? 'success' : 'error');
+                if ('serviceWorker' in navigator && navigator.serviceWorker.getRegistration) {
+                    navigator.serviceWorker.getRegistration().then(function(reg){
+                        logMessage('SW: ' + (reg ? 'registered' : 'not registered'), reg ? 'success' : 'error');
+                    });
+                }
+            } catch(e){ logMessage('Self-check error: ' + e.message, 'error'); }
         }
         
         // User-Agent Spoofing Functions
@@ -1316,6 +1263,7 @@
         function initializeApp() {
             logMessage("App initialized (Legacy Mode)", "info");
             activateChimera();
+            selfCheck();
         }
         
         if ('serviceWorker' in navigator) {

@@ -2,12 +2,12 @@
   "name": "TotallyNotSpyware v2",
   "short_name": "TNSv2",
   "description": "Re-jailbreak utility for devices initially jailbroken with Chimera on iOS 12",
-  "start_url": "/",
+  "start_url": "/totally-not-spyware-v2/tns-pwa/dist/exploit-compact.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "portrait-primary",
-  "scope": "/",
+  "scope": "/totally-not-spyware-v2/",
   "lang": "en",
   "icons": [
     {

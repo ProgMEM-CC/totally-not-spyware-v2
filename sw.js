@@ -1,5 +1,9 @@
-const CACHE_NAME = 'tns-v2-cache-v3';
-const ICON_CACHE = 'tns-v2-icons-v1';
+const CACHE_NAME = 'tns-v2-cache-v4';
+const ICON_CACHE = 'tns-v2-icons-v2';
+
+// Resolve URLs relative to the service worker scope (works on GitHub Pages project paths)
+const SCOPE_BASE = (self.registration && self.registration.scope) || self.location.href;
+const toScopeURL = (u) => new URL(u, SCOPE_BASE);
 
 // Core files + pages (relative to SW scope)
 const urlsToCacheRel = [
@@ -56,17 +60,17 @@ const REMOTE_TO_LOCAL_ICON_MAP = [
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const core = await caches.open(CACHE_NAME);
-    await core.addAll(urlsToCacheRel.map(u => new URL(u, location.origin)));
+    await core.addAll(urlsToCacheRel.map(u => toScopeURL(u)));
     const iconCache = await caches.open(ICON_CACHE);
     // Precache local icons
-    await iconCache.addAll(ICONS_TO_PRECACHE_REL.map(u => new URL(u, location.origin)));
+    await iconCache.addAll(ICONS_TO_PRECACHE_REL.map(u => toScopeURL(u)));
     // Try to precache external icons (ignore CORS/opaque concerns)
     await Promise.allSettled(EXTERNAL_ICONS.map(u => iconCache.add(u).catch(()=>null)));
     // Populate remote icons under local keys for reliable same-origin access
     await Promise.allSettled(REMOTE_TO_LOCAL_ICON_MAP.map(async ([localPath, remoteUrl]) => {
       try {
         const res = await fetch(remoteUrl, { mode: 'no-cors' });
-        await iconCache.put(new URL(localPath, location.origin), res.clone());
+        await iconCache.put(toScopeURL(localPath), res.clone());
       } catch (_) { /* ignore */ }
     }));
   })());
@@ -111,7 +115,10 @@ self.addEventListener('fetch', event => {
       return res;
     } catch (e) {
       // Offline fallback to index or exploit-compact
-      return (await core.match('/exploit-compact.html')) || (await core.match('/index.html')) || Response.error();
+      return (await core.match(toScopeURL('tns-pwa/dist/exploit-compact.html'))) 
+          || (await core.match(toScopeURL('exploit-compact.html'))) 
+          || (await core.match(toScopeURL('index.html'))) 
+          || Response.error();
     }
   })());
 });

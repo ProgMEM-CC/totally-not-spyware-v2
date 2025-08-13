@@ -659,18 +659,20 @@
             overflow-y: scroll;
             text-align: left;
         }
-        
-        .log-container h3 {
-            margin: 0 0 15px 0;
-            color: #74c0fc;
-            text-align: center;
-        }
+        /* Collapsible header */
+        .log-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .log-header h3 { margin: 0; color: #74c0fc; font-size: 20px; font-weight: 800; }
+        .log-toggle { font-size: 18px; color: #74c0fc; transition: transform 0.2s ease; }
+        .log-toggle.collapsed { transform: rotate(-90deg); }
+        .log-content { padding-top: 12px; display: none; }
+        .log-content.expanded { display: block; }
         
         .log-entry {
             padding: 8px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 0.95em;
+            font-weight: 800;
         }
         
         .log-entry:last-child {
@@ -880,8 +882,11 @@
         </div>
         
         <div class="log-container">
-            <h3>📋 Activity Log</h3>
-            <div id="log"></div>
+            <div class="log-header" onclick="toggleLog()">
+                <h3>📋 Activity Log</h3>
+                <span class="log-toggle collapsed">▶</span>
+            </div>
+            <div id="log" class="log-content"></div>
         </div>
         
         <div id="spoofing-tool" class="info-box" style="display: none;">
@@ -976,6 +981,26 @@
             entry.appendChild(messageSpan);
             log.appendChild(entry);
             log.scrollTop = log.scrollHeight;
+        }
+
+        // Collapsible activity log
+        var isLogCollapsed = true;
+        function toggleLog(){
+            var logContent = document.getElementById('log');
+            var arrow = document.querySelector('.log-toggle');
+            if (!logContent || !arrow) return;
+            isLogCollapsed = !isLogCollapsed;
+            if (isLogCollapsed) {
+                logContent.classList.remove('expanded');
+                logContent.classList.add('collapsed');
+                arrow.classList.add('collapsed');
+                logContent.style.display = 'none';
+            } else {
+                logContent.classList.add('expanded');
+                logContent.classList.remove('collapsed');
+                arrow.classList.remove('collapsed');
+                logContent.style.display = 'block';
+            }
         }
         
         function connectWebSocket() {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tns-v2-cache-v2';
+const CACHE_NAME = 'tns-v2-cache-v3';
 const ICON_CACHE = 'tns-v2-icons-v1';
 
 // Core files + pages (relative to SW scope)
@@ -6,6 +6,7 @@ const urlsToCacheRel = [
   'index.html',
   'exploit-compact.html',
   'tns-pwa/dist/exploit-compact.html',
+  'tns-pwa/dist/legacy.html',
   'legacy.html',
   'manifest.json',
   'utils.js',

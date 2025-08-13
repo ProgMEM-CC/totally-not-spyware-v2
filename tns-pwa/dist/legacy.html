@@ -11,18 +11,18 @@
     
     <title>TotallyNotSpyware v2 - Legacy iOS</title>
     
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="../../manifest.json">
     
-    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
+    <link rel="apple-touch-icon" href="../../icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="../../icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../icons/icon-180x180.png">
     
     <!-- 100% iOS 12 Safari Compatibility -->
     <link rel="stylesheet" href="compatibility.css">
     <script src="compatibility.js"></script>
     
     <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.css">
-    <link rel="icon" type="image/png" href="icons/icon-152x152.png">
+    <link rel="icon" type="image/png" href="../../icons/icon-152x152.png">
     
     <style>
         /* iOS 12 Safari Compatibility Fixes:
@@ -935,12 +935,12 @@
         </div>
     </div>
     
-    <script src="utils.js"></script>
-    <script src="helper.js"></script>
-    <script src="int64.js"></script>
-    <script src="stages.js"></script>
-    <script src="offsets.js"></script>
-    <script src="pwn.js"></script>
+    <script src="../../utils.js"></script>
+    <script src="../../helper.js"></script>
+    <script src="../../int64.js"></script>
+    <script src="../../stages.js"></script>
+    <script src="../../offsets.js"></script>
+    <script src="../../pwn.js?v=20250813a"></script>
     
     <script>
         var ws = null;
@@ -1405,7 +1405,7 @@
         
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('../../sw.js')
                     .then(function(registration) {
                         logMessage("Service Worker registered", "success");
                     })

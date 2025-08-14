@@ -1,5 +1,5 @@
-const CACHE_NAME = 'tns-v2-cache-v5';
-const ICON_CACHE = 'tns-v2-icons-v3';
+const CACHE_NAME = 'tns-v2-cache-v6';
+const ICON_CACHE = 'tns-v2-icons-v4';
 
 // Resolve URLs relative to the service worker scope (works on GitHub Pages project paths)
 const SCOPE_BASE = (self.registration && self.registration.scope) || self.location.href;
@@ -19,6 +19,7 @@ const urlsToCacheRel = [
   'stages.js',
   'offsets.js',
   'pwn.js',
+  'icons/icon-180x180.png',
   'icons/icon-192x192.png',
   'icons/icon-512x512.png',
   'icons/TotallyNotSpyware.png'

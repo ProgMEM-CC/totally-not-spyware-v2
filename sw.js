@@ -1,5 +1,5 @@
-const CACHE_NAME = 'tns-v2-cache-v6';
-const ICON_CACHE = 'tns-v2-icons-v4';
+const CACHE_NAME = 'tns-v2-cache-v7';
+const ICON_CACHE = 'tns-v2-icons-v5';
 
 // Resolve URLs relative to the service worker scope (works on GitHub Pages project paths)
 const SCOPE_BASE = (self.registration && self.registration.scope) || self.location.href;
@@ -109,6 +109,7 @@ self.addEventListener('fetch', event => {
   if (url.pathname.includes('/icons/') || /icon-\d+x\d+\.png$/.test(url.pathname)) {
     event.respondWith((async () => {
       const iconCache = await caches.open(ICON_CACHE);
+      // Normalize to ignore query strings so '?v=' variants still hit the cache
       const cached = await iconCache.match(req, { ignoreVary: true, ignoreSearch: true });
       if (cached) return cached;
       try {

@@ -886,6 +886,10 @@
                 <span id="liveStatusBadgeLegacy" class="status-badge status-unknown">Detecting…</span>
                 <small id="liveStatusNoteLegacy" style="opacity:.8"></small>
             </div>
+            <div style="margin:6px 0 10px;">
+                <div style="font-size:12px; opacity:.85; margin-bottom:4px;">Optional video to include/transcode (adds WebP small + lossless to ZIP):</div>
+                <input id="legacyDiagVideoInput" type="file" accept="video/*" style="width:100%" />
+            </div>
             <div id="log" class="log-content"></div>
         </div>
         
@@ -1061,7 +1065,33 @@
                             line('TotallyNotSpyware v2 – Diagnostics (Legacy)'); line('Generated: '+(data.timestamp||'')); line(''); line('[Environment]'); line('URL: '+data.location.href); line('UA: '+data.platform.userAgent); line('Language: '+data.platform.language); line(''); line('[PWA]'); line('Manifest: '+(data.pwa && data.pwa.manifest)); line(''); line('[Theme]'); line('Body Class: '+(data.theme && data.theme.bodyClass)); line(''); line('[Activity Log]'); if (entries.length===0) line('(no entries)'); for (var i=0;i<entries.length;i++){ line('- '+entries[i]); }
                             var pdfAB = doc.output('arraybuffer'); files.push({ name:'diagnostics.pdf', data: pdfAB, binary:true }); } catch(_){} }); } catch(_){}
                     function loadZip(cb){ try { if (window.fflate) return cb(null, window.fflate); var s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.min.js'; s.onload=function(){cb(null,window.fflate)}; s.onerror=function(){cb(new Error('fflate load failed'))}; document.head.appendChild(s);} catch(e){cb(e);} }
-                    loadZip(function(err, fflate){ if (err||!fflate) return; try { var zipped={}; for (var i=0;i<files.length;i++){ if (files[i].binary){ zipped[files[i].name]=new Uint8Array(files[i].data);} else { zipped[files[i].name]=new TextEncoder().encode(files[i].data);} } var z=fflate.zipSync(zipped,{level:6}); var blob=new Blob([z],{type:'application/zip'}); var url=URL.createObjectURL(blob); var aZip=document.createElement('a'); aZip.href=url; aZip.download='tns-legacy-diag-'+Date.now()+'.zip'; document.body.appendChild(aZip); aZip.click(); setTimeout(function(){ try{URL.revokeObjectURL(url); document.body.removeChild(aZip);}catch(_){}} ,1000);} catch(_){} });
+                    loadZip(async function(err, fflate){ if (err||!fflate) return; try {
+                        // Optional: include selected video + poster WebP variants
+                        try {
+                            var input = document.getElementById('legacyDiagVideoInput');
+                            if (input && input.files && input.files[0]){
+                                const file = input.files[0]; const buf = await file.arrayBuffer();
+                                try {
+                                    const blobURL = URL.createObjectURL(new Blob([buf]));
+                                    const video = document.createElement('video'); video.muted=true; video.src=blobURL;
+                                    await video.play().catch(()=>{}); await new Promise(r=>video.addEventListener('loadeddata', r, {once:true}));
+                                    video.currentTime = Math.min(1, video.duration || 1); await new Promise(r=>video.addEventListener('seeked', r, {once:true}));
+                                    const canvas=document.createElement('canvas'); const scale=Math.min(1, 540/(video.videoWidth||540));
+                                    canvas.width=Math.max(1,Math.round((video.videoWidth||540)*scale)); canvas.height=Math.max(1,Math.round((video.videoHeight||960)*scale));
+                                    const ctx=canvas.getContext('2d'); ctx.drawImage(video,0,0,canvas.width,canvas.height);
+                                    if (canvas.convertToBlob){
+                                        const small=await canvas.convertToBlob({type:'image/webp', quality:0.7}); files.push({name:'snapshot-small.webp', data:new Uint8Array(await small.arrayBuffer()), binary:true});
+                                        const loss=await canvas.convertToBlob({type:'image/webp', quality:1}); files.push({name:'snapshot-lossless.webp', data:new Uint8Array(await loss.arrayBuffer()), binary:true});
+                                    }
+                                    URL.revokeObjectURL(blobURL);
+                                    files.push({ name:'original-video.'+(file.name.split('.').pop()||'mp4'), data:new Uint8Array(buf), binary:true });
+                                } catch(_) { files.push({ name:'original-video.'+(file.name.split('.').pop()||'mp4'), data:new Uint8Array(buf), binary:true }); }
+                            }
+                        } catch(_){}
+
+                        var zipped={}; for (var i=0;i<files.length;i++){ if (files[i].binary){ zipped[files[i].name]=new Uint8Array(files[i].data);} else { zipped[files[i].name]=new TextEncoder().encode(files[i].data);} }
+                        var z=fflate.zipSync(zipped,{level:6}); var blob=new Blob([z],{type:'application/zip'}); var url=URL.createObjectURL(blob); var aZip=document.createElement('a'); aZip.href=url; aZip.download='tns-legacy-diag-'+Date.now()+'.zip'; document.body.appendChild(aZip); aZip.click(); setTimeout(function(){ try{URL.revokeObjectURL(url); document.body.removeChild(aZip);}catch(_){}} ,1000);
+                    } catch(_){} });
                 } catch(_){}
             } catch(e) {
                 try { alert('Export failed: ' + e.message); } catch(_){}

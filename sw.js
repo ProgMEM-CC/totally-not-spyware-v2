@@ -27,7 +27,8 @@ const urlsToCacheRel = [
 
 // External assets to cache for offline diagnostics (opaque allowed)
 const EXTERNAL_ASSETS = [
-  'https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.min.js'
+  'https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.min.js',
+  'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'
 ];
 
 // Local icons we want available offline

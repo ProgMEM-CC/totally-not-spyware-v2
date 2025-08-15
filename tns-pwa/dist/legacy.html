@@ -879,6 +879,9 @@
                 <h3>📋 Activity Log</h3>
                 <span class="log-toggle collapsed">▶</span>
             </div>
+            <div style="text-align:right; margin-top:6px;">
+                <button class="button secondary" style="padding:8px 12px; min-width:auto; display:inline-block; width:auto; font-size:12px;" onclick="exportDiagnosticsLegacy()">Export</button>
+            </div>
             <div class="status-row">
                 <span id="liveStatusBadgeLegacy" class="status-badge status-unknown">Detecting…</span>
                 <small id="liveStatusNoteLegacy" style="opacity:.8"></small>
@@ -967,6 +970,72 @@
             entry.appendChild(messageSpan);
             log.appendChild(entry);
             log.scrollTop = log.scrollHeight;
+        }
+
+        // Export Activity Log & Diagnostics (Legacy)
+        function exportDiagnosticsLegacy(){
+            try {
+                var data = {};
+                data.timestamp = new Date().toISOString();
+                data.location = { href: location.href, origin: location.origin, pathname: location.pathname, search: location.search };
+                data.platform = { userAgent: navigator.userAgent, language: navigator.language, languages: navigator.languages };
+                data.pwa = { manifest: (function(){ try { return document.querySelector('link[rel="manifest"]').getAttribute('href'); } catch(_) { return null; } })() };
+                data.theme = { bodyClass: document.body.className };
+                data.serviceWorker = { supported: 'serviceWorker' in navigator };
+                var logEl = document.getElementById('log');
+                var entries = [];
+                if (logEl) {
+                    var nodes = logEl.querySelectorAll('.log-entry');
+                    for (var i=0;i<nodes.length;i++){
+                        var t = (nodes[i].querySelector('.log-time')||{}).textContent||'';
+                        var m = (nodes[i].querySelector('.log-message')||{}).textContent||'';
+                        entries.push((t||'') + (m||''));
+                    }
+                }
+                data.logs = entries;
+
+                // JSON
+                var jsonBlob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+                var jsonUrl = URL.createObjectURL(jsonBlob);
+                var a = document.createElement('a'); a.href = jsonUrl; a.download = 'tns-legacy-diag-' + Date.now() + '.json'; document.body.appendChild(a); a.click(); setTimeout(function(){ try { URL.revokeObjectURL(jsonUrl); document.body.removeChild(a); } catch(_){} }, 1000);
+
+                // NDJSON
+                try {
+                    var nd = [];
+                    nd.push(JSON.stringify({ type: 'meta', timestamp: data.timestamp, location: data.location, platform: data.platform, pwa: data.pwa, theme: data.theme, serviceWorker: data.serviceWorker }));
+                    for (var j=0;j<entries.length;j++){
+                        var raw = entries[j]; var mm = /^\[(.*?)\]\s*(.*)$/.exec(raw) || [];
+                        nd.push(JSON.stringify({ type: 'log', index: j, time: mm[1] || null, message: mm[2] || raw }));
+                    }
+                    var ndBlob = new Blob([nd.join('\n') + '\n'], { type: 'application/x-ndjson' });
+                    var ndUrl = URL.createObjectURL(ndBlob);
+                    var aNd = document.createElement('a'); aNd.href = ndUrl; aNd.download = 'tns-legacy-diag-' + Date.now() + '.ndjson'; document.body.appendChild(aNd); aNd.click(); setTimeout(function(){ try { URL.revokeObjectURL(ndUrl); document.body.removeChild(aNd); } catch(_){} }, 1000);
+                } catch(_){}
+
+                // TXT
+                try {
+                    var lines = [];
+                    function pushKV(k, v){ try { lines.push(k + ': ' + v); } catch(_){} }
+                    lines.push('TotallyNotSpyware v2 – Diagnostics (Legacy)');
+                    lines.push('Generated: ' + (data.timestamp || ''));
+                    lines.push(''); lines.push('[Environment]');
+                    pushKV('URL', data.location.href);
+                    pushKV('UA', data.platform.userAgent);
+                    pushKV('Language', data.platform.language);
+                    lines.push(''); lines.push('[PWA]');
+                    pushKV('Manifest', data.pwa.manifest);
+                    lines.push(''); lines.push('[Theme]');
+                    pushKV('Body Class', data.theme.bodyClass);
+                    lines.push(''); lines.push('[Activity Log]');
+                    if (entries.length === 0) { lines.push('(no entries)'); }
+                    for (var k=0;k<entries.length;k++){ lines.push('- ' + entries[k]); }
+                    var txtBlob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+                    var txtUrl = URL.createObjectURL(txtBlob);
+                    var a2 = document.createElement('a'); a2.href = txtUrl; a2.download = 'tns-legacy-diag-' + Date.now() + '.txt'; document.body.appendChild(a2); a2.click(); setTimeout(function(){ try { URL.revokeObjectURL(txtUrl); document.body.removeChild(a2); } catch(_){} }, 1000);
+                } catch(_){}
+            } catch(e) {
+                try { alert('Export failed: ' + e.message); } catch(_){}
+            }
         }
 
         // Collapsible activity log

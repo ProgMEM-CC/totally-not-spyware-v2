@@ -9,6 +9,9 @@ import tempfile
 import shutil
 import zipfile
 import json
+import hashlib
+import datetime
+import secrets
 
 Clients = {}
 
@@ -223,6 +226,81 @@ async def transcode_webp(request: web.Request) -> web.StreamResponse:
         except Exception:
             pass
 
+# ---- Privacy-preserving telemetry collection --------------------------------
+_SALT_PATH = '.telemetry_salt'
+_TELEMETRY_DIR = 'telemetry'
+_TELEMETRY_FILE = os.path.join(_TELEMETRY_DIR, 'analytics.ndjson')
+
+def _get_salt() -> bytes:
+    try:
+        if os.path.exists(_SALT_PATH):
+            with open(_SALT_PATH, 'rb') as f:
+                return f.read()
+        salt = secrets.token_bytes(16)
+        with open(_SALT_PATH, 'wb') as f:
+            f.write(salt)
+        return salt
+    except Exception:
+        return b'fixed-salt'
+
+async def _geoip_coarse(ip: str) -> dict:
+    # Coarse geolocation using ipapi.co (best-effort, optional)
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://ipapi.co/{ip}/json/', timeout=3) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    return {
+                        'country': data.get('country_name'),
+                        'region': data.get('region'),
+                        'city': data.get('city'),
+                        'approx_loc': data.get('latitude') and data.get('longitude') and f"{round(data.get('latitude',0),2)},{round(data.get('longitude',0),2)}" or None,
+                    }
+    except Exception:
+        pass
+    return {}
+
+async def collect_telemetry(request: web.Request) -> web.Response:
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST,OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Cache-Control': 'no-store'
+    }
+    if request.method == 'OPTIONS':
+        return web.Response(status=204, headers=headers)
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+    # Redact/approximate IP
+    ip = request.remote or ''
+    salt = _get_salt()
+    ip_hash = hashlib.sha256(salt + ip.encode('utf-8')).hexdigest()[:16] if ip else None
+    # Optional coarse geo
+    geo = await _geoip_coarse(ip) if ip else {}
+    # Compose event
+    event = {
+        'ts': datetime.datetime.utcnow().isoformat() + 'Z',
+        'event': payload.get('event'),
+        'session': payload.get('session'),
+        'ua': payload.get('ua'),
+        'platform': payload.get('platform'),
+        'viewport': payload.get('viewport'),
+        'theme': payload.get('theme'),
+        'page': payload.get('page'),
+        'outcome': payload.get('outcome'),
+        'ip_hash': ip_hash,
+        'geo': geo,
+    }
+    try:
+        os.makedirs(_TELEMETRY_DIR, exist_ok=True)
+        with open(_TELEMETRY_FILE, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(event, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+    return web.json_response({'ok': True}, headers=headers)
+
 try:
     ClearLogs()
     app = web.Application()
@@ -236,6 +314,7 @@ try:
     app.router.add_get('/WebSocket', wshandler)
     app.router.add_route('*', '/api/transcode', transcode_webp)
     app.router.add_get('/api/health', transcode_health)
+    app.router.add_route('*', '/api/collect', collect_telemetry)
     web.run_app(app, host='0.0.0.0', port=1337)
 except KeyboardInterrupt:
     exit(0)

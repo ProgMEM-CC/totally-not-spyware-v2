@@ -22,8 +22,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build APT repo (optional)
+        continue-on-error: true
         run: |
-          sudo apt-get update && sudo apt-get install -y dpkg-dev fakeroot
+          sudo apt-get update && sudo apt-get install -y dpkg-dev fakeroot || true
           chmod +x tools/apt/build-repo.sh || true
           bash tools/apt/build-repo.sh || true
 
@@ -31,8 +32,16 @@ jobs:
         run: |
           rm -rf .pages-dist
           mkdir -p .pages-dist
-          shopt -s dotglob
-          cp -R * .pages-dist/
+          # Copy everything except .git to artifact directory
+          if command -v rsync >/dev/null 2>&1; then
+            rsync -a --exclude='.git' ./ .pages-dist/
+          else
+            shopt -s dotglob
+            for f in *; do
+              [ "$f" = ".git" ] && continue
+              cp -R "$f" .pages-dist/
+            done
+          fi
           # Ensure Jekyll does not ignore folders starting with underscores
           touch .pages-dist/.nojekyll
 

@@ -35,6 +35,17 @@
       </ol>
     </div>
     <div class="card">
+      <h2>Technical details (CVE-2020-9802)</h2>
+      <p>Root cause: a Common-Subexpression Elimination (CSE) modeling bug in JavaScriptCore’s DFG JIT. A later <code>ArithNegate</code> that should be checked (via <code>Math.abs</code>) could be CSE’d with an earlier unchecked negate, dropping the overflow check on <code>INT_MIN</code>. IntegerRangeOptimization then assumed the value was non‑negative, eliminating bounds checks and turning following math into unchecked arithmetic. The final iteration transformed <code>INT_MIN</code> into a large positive index, enabling a controlled out‑of‑bounds array write that corrupts the next array header (length/capacity inflation). Reference: <a href="https://googleprojectzero.blogspot.com/2020/09/jitsploitation-one.html" target="_blank" rel="noopener">Samuel Groß, Project Zero</a>.</p>
+      <ul>
+        <li>Trigger: produce an unchecked negate (e.g., <code>(-n)|0</code>), then a checked negate via <code>Math.abs(n)</code>; CSE merges them.</li>
+        <li>Range analysis assumes <code>i ≥ 0</code>, eliminates bounds check, makes arithmetic unchecked.</li>
+        <li>In last loop, <code>n = INT_MIN</code>; unchecked add shifts to a large positive index → header overwrite.</li>
+        <li>Primitives: overlapping arrays yield <code>addrof</code>/<code>fakeobj</code> → arbitrary R/W.</li>
+      </ul>
+      <p>Fixed in iOS 13.5/13.6; our gate enforces iOS 12 Safari only.</p>
+    </div>
+    <div class="card">
       <h2>Requirements</h2>
       <ul>
         <li>Device: A7–A10, iOS 12.0–12.5.x</li>

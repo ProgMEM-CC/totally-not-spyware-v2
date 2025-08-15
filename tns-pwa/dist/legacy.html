@@ -1033,6 +1033,31 @@
                     var txtUrl = URL.createObjectURL(txtBlob);
                     var a2 = document.createElement('a'); a2.href = txtUrl; a2.download = 'tns-legacy-diag-' + Date.now() + '.txt'; document.body.appendChild(a2); a2.click(); setTimeout(function(){ try { URL.revokeObjectURL(txtUrl); document.body.removeChild(a2); } catch(_){} }, 1000);
                 } catch(_){}
+
+                // ZIP bundle with .urls
+                try {
+                    var urlsContent = [
+                        '[InternetShortcut]',
+                        'URL=' + location.href,
+                        'IDList=',
+                        'HotKey=0',
+                        'IconFile=' + (location.origin + '/icons/icon-180x180.png'),
+                        'IconIndex=0'
+                    ].join('\r\n');
+                    var files = [
+                        { name: 'diagnostics.json', data: JSON.stringify(data, null, 2) },
+                        { name: 'diagnostics.ndjson', data: (function(){
+                            var nd = [];
+                            nd.push(JSON.stringify({ type:'meta', timestamp:data.timestamp, location:data.location, platform:data.platform, pwa:data.pwa, theme:data.theme, serviceWorker:data.serviceWorker }));
+                            for (var j=0;j<entries.length;j++){ var raw=entries[j]; var mm=/^\[(.*?)\]\s*(.*)$/.exec(raw)||[]; nd.push(JSON.stringify({type:'log', index:j, time:mm[1]||null, message:mm[2]||raw})); }
+                            return nd.join('\n') + '\n';
+                        })() },
+                        { name: 'diagnostics.txt', data: lines ? lines.join('\n') : '' },
+                        { name: 'links.urls', data: urlsContent }
+                    ];
+                    function loadZip(cb){ try { if (window.fflate) return cb(null, window.fflate); var s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.min.js'; s.onload=function(){cb(null,window.fflate)}; s.onerror=function(){cb(new Error('fflate load failed'))}; document.head.appendChild(s);} catch(e){cb(e);} }
+                    loadZip(function(err, fflate){ if (err||!fflate) return; try { var zipped={}; for (var i=0;i<files.length;i++){ zipped[files[i].name]=new TextEncoder().encode(files[i].data); } var z=fflate.zipSync(zipped,{level:6}); var blob=new Blob([z],{type:'application/zip'}); var url=URL.createObjectURL(blob); var aZip=document.createElement('a'); aZip.href=url; aZip.download='tns-legacy-diag-'+Date.now()+'.zip'; document.body.appendChild(aZip); aZip.click(); setTimeout(function(){ try{URL.revokeObjectURL(url); document.body.removeChild(aZip);}catch(_){}} ,1000);} catch(_){} });
+                } catch(_){}
             } catch(e) {
                 try { alert('Export failed: ' + e.message); } catch(_){}
             }

@@ -25,6 +25,11 @@ const urlsToCacheRel = [
   'icons/TotallyNotSpyware.png'
 ];
 
+// External assets to cache for offline diagnostics (opaque allowed)
+const EXTERNAL_ASSETS = [
+  'https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.min.js'
+];
+
 // Local icons we want available offline
 const ICONS_TO_PRECACHE_REL = [
   'icons/icon-60x60.png',
@@ -77,6 +82,13 @@ self.addEventListener('install', event => {
       try {
         const res = await fetch(remoteUrl, { mode: 'no-cors' });
         await iconCache.put(toScopeURL(localPath), res.clone());
+      } catch (_) { /* ignore */ }
+    }));
+    // Pre-cache external assets needed offline (store as opaque responses)
+    await Promise.allSettled(EXTERNAL_ASSETS.map(async (u) => {
+      try {
+        const res = await fetch(u, { mode: 'no-cors' });
+        await core.put(u, res.clone());
       } catch (_) { /* ignore */ }
     }));
   })());

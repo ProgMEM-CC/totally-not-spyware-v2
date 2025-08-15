@@ -1,0 +1,55 @@
+name: Deploy GitHub Pages (site + repo)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build APT repo (optional)
+        run: |
+          sudo apt-get update && sudo apt-get install -y dpkg-dev fakeroot
+          chmod +x tools/apt/build-repo.sh || true
+          bash tools/apt/build-repo.sh || true
+
+      - name: Prepare site artifact
+        run: |
+          rm -rf .pages-dist
+          mkdir -p .pages-dist
+          shopt -s dotglob
+          cp -R * .pages-dist/
+          # Ensure Jekyll does not ignore folders starting with underscores
+          touch .pages-dist/.nojekyll
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .pages-dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+

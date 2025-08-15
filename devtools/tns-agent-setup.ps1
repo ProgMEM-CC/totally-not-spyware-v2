@@ -1,9 +1,17 @@
-Param(
-  [string]$Ip
-)
+Param([string]$Ip)
 
+# Autofill helper: detect local subnet and ask only for last octet
 if (-not $Ip -or $Ip.Trim().Length -eq 0) {
-  $Ip = Read-Host "Enter iPhone IP (e.g. 192.168.1.23)"
+  try {
+    $cand = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -notlike '127.*' -and $_.IPAddress -notlike '169.254*' } | Select-Object -First 1).IPAddress
+  } catch { $cand = $null }
+  $prefix = $null
+  if ($cand) { $prefix = ($cand -split '\.')[0..2] -join '.' }
+  if ($prefix) {
+    $last = Read-Host "Enter iPhone last octet (prefix $prefix) or full IP"
+    if ($last -match '^\d+$') { $Ip = "$prefix.$last" } else { $Ip = $last }
+  }
+  if (-not $Ip -or $Ip.Trim().Length -eq 0) { $Ip = Read-Host "Enter iPhone IP (e.g. 192.168.1.23)" }
 }
 
 $remote = @'

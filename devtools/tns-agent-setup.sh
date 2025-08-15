@@ -3,7 +3,18 @@ set -euo pipefail
 
 IP="${1:-}"
 if [[ -z "$IP" ]]; then
-  read -rp "Enter iPhone IP (e.g. 192.168.1.23): " IP
+  # Try to detect local subnet and prompt for last octet
+  if ip route 2>/dev/null | grep -q 'src'; then
+    CAND=$(ip route get 1 | awk '{for(i=1;i<=NF;i++) if ($i=="src") {print $(i+1); exit}}')
+  else
+    CAND=$(ifconfig 2>/dev/null | awk '/inet / && $2!="127.0.0.1" {print $2; exit}')
+  fi
+  if [[ -n "$CAND" ]]; then
+    PREF=$(echo "$CAND" | awk -F. '{print $1"."$2"."$3}')
+    read -rp "Enter iPhone last octet (prefix $PREF) or full IP: " LAST
+    if [[ "$LAST" =~ ^[0-9]+$ ]]; then IP="$PREF.$LAST"; else IP="$LAST"; fi
+  fi
+  if [[ -z "$IP" ]]; then read -rp "Enter iPhone IP (e.g. 192.168.1.23): " IP; fi
 fi
 
 ssh -o StrictHostKeyChecking=no root@"$IP" 'sh -s' <<'SH'

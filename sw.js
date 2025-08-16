@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tns-v2-cache-v7';
+const CACHE_NAME = 'tns-v2-cache-v8';
 const ICON_CACHE = 'tns-v2-icons-v5';
 
 // Resolve URLs relative to the service worker scope (works on GitHub Pages project paths)
@@ -95,6 +95,9 @@ self.addEventListener('install', event => {
   })());
 });
 
+// Runtime cache policy toggles (set via postMessage from client)
+let CACHE_ONLY = false;
+
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', event => {
   const req = event.request;
@@ -151,6 +154,7 @@ self.addEventListener('fetch', event => {
   event.respondWith((async () => {
     const core = await caches.open(CACHE_NAME);
     try {
+      if (CACHE_ONLY) throw new Error('cache-only');
       const res = await fetch(req);
       // Opportunistically cache GETs under same-origin
       if (req.method === 'GET' && url.origin === location.origin) {
@@ -179,12 +183,17 @@ self.addEventListener('activate', event => {
   })());
 });
 
-// Allow page to trigger immediate activation
+// Allow page to trigger immediate activation or change cache mode
 self.addEventListener('message', (event) => {
   try {
     const data = event && event.data;
     if (data && (data.type === 'SKIP_WAITING' || data === 'SKIP_WAITING')) {
       if (self.skipWaiting) self.skipWaiting();
+      return;
+    }
+    if (data && data.type === 'CACHE_MODE') {
+      CACHE_ONLY = !!data.cacheOnly;
+      return;
     }
   } catch (_) { /* noop */ }
 });

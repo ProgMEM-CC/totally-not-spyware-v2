@@ -1,3 +1,48 @@
+name: VisualDataCast Transcode
+
+on:
+  workflow_dispatch:
+    inputs:
+      invid:
+        description: Input video path (relative to repo)
+        required: true
+      injson:
+        description: Diagnostics JSON path (relative to repo)
+        required: true
+      outdir:
+        description: Output directory
+        required: false
+        default: visualdatacast-out
+
+jobs:
+  transcode:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Ensure script is executable
+        run: |
+          chmod +x tools/visual-debug/build-report.sh || true
+
+      - name: Run VisualDataCast report
+        env:
+          INVID: ${{ github.event.inputs.invid }}
+          INJSON: ${{ github.event.inputs.injson }}
+          OUTDIR: ${{ github.event.inputs.outdir }}
+        run: |
+          bash tools/visual-debug/build-report.sh "$INVID" "$INJSON" "$OUTDIR"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: visualdatacast-${{ github.run_id }}
+          path: ${{ github.event.inputs.outdir }}
 name: VisualDataCast smoke
 
 on:

@@ -1,0 +1,24 @@
+#!/bin/bash
+# Minimal BusyBox/sh-compatible HTTP server using nc
+# Listens on 127.0.0.1:17385 for /ping and /rejb
+PORT=17385
+
+handler() {
+  read -r method path proto
+  while read -r hdr && [ "$hdr" != $'\r' ]; do :; done
+  if [[ "$path" == "/ping"* ]]; then
+    body='{"ok":true,"flavor":"chimera"}'
+    printf 'HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: %s\r\nConnection: close\r\n\r\n%s' "${#body}" "$body"
+  elif [[ "$path" == "/rejb"* ]]; then
+    body='{"ok":true,"started":true}'
+    printf 'HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: %s\r\nConnection: close\r\n\r\n%s' "${#body}" "$body"
+    # TODO: invoke actual rejailbreak script/binary here
+  else
+    printf 'HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n'
+  fi
+}
+
+while true; do
+  { handler; } | nc -l 127.0.0.1 "$PORT" -N || sleep 1
+done
+

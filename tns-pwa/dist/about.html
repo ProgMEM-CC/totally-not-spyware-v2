@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>About – TotallyNotSpyware v2</title>
+  <link rel="manifest" href="../../manifest.json">
+  <style>
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f172a;color:#e2e8f0;line-height:1.6}
+    .wrap{max-width:900px;margin:0 auto;padding:24px}
+    h1,h2{margin:16px 0 8px}
+    .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px;margin:12px 0}
+    a{color:#93c5fd}
+    code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>TotallyNotSpyware v2 – How it works</h1>
+    <div class="card">
+      <h2>Goals</h2>
+      <ul>
+        <li>Re-enable a previously jailbroken iOS 12 device (A7–A10) after a userspace reboot.</li>
+        <li>Deliver as a Progressive Web App (PWA) with offline support.</li>
+        <li>Never run on unsupported platforms (gated to iOS 12 Safari).</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>High-level chain</h2>
+      <ol>
+        <li><strong>Web entry</strong>: The PWA loads the exploit UI and verifies the platform (iOS 12 Safari).</li>
+        <li><strong>Exploit scripts</strong>: <code>pwn.js</code> orchestrates the chain using helpers in <code>utils.js</code>, <code>int64.js</code>, <code>stages.js</code>, and device <code>offsets.js</code>.</li>
+        <li><strong>Stages</strong>: memory primitives → kernel r/w → trustcache/AMFI adjustments → userspace patches to make the previous jailbreak functional again.</li>
+        <li><strong>Post</strong>: the UI exposes logs, a safe retry path, and a launcher for common tools (Sileo/Zebra/Filza/etc.).</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h2>Technical details (CVE-2020-9802)</h2>
+      <p>Root cause: a Common-Subexpression Elimination (CSE) modeling bug in JavaScriptCore’s DFG JIT. A later <code>ArithNegate</code> that should be checked (via <code>Math.abs</code>) could be CSE’d with an earlier unchecked negate, dropping the overflow check on <code>INT_MIN</code>. IntegerRangeOptimization then assumed the value was non‑negative, eliminating bounds checks and turning following math into unchecked arithmetic. The final iteration transformed <code>INT_MIN</code> into a large positive index, enabling a controlled out‑of‑bounds array write that corrupts the next array header (length/capacity inflation). Reference: <a href="https://googleprojectzero.blogspot.com/2020/09/jitsploitation-one.html" target="_blank" rel="noopener">Samuel Groß, Project Zero</a>.</p>
+      <ul>
+        <li>Trigger: produce an unchecked negate (e.g., <code>(-n)|0</code>), then a checked negate via <code>Math.abs(n)</code>; CSE merges them.</li>
+        <li>Range analysis assumes <code>i ≥ 0</code>, eliminates bounds check, makes arithmetic unchecked.</li>
+        <li>In last loop, <code>n = INT_MIN</code>; unchecked add shifts to a large positive index → header overwrite.</li>
+        <li>Primitives: overlapping arrays yield <code>addrof</code>/<code>fakeobj</code> → arbitrary R/W.</li>
+      </ul>
+      <p>Fixed in iOS 13.5/13.6; our gate enforces iOS 12 Safari only.</p>
+    </div>
+    <div class="card">
+      <h2>Requirements</h2>
+      <ul>
+        <li>Device: A7–A10, iOS 12.0–12.5.x</li>
+        <li>Browser: Safari (WebKit 12). No in-app browsers/Chrome/Firefox.</li>
+        <li>Recommended: add to Home Screen to enable full offline caching.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Security notes</h2>
+      <ul>
+        <li>The UI is strictly blocked on unsupported platforms. A testing override is available with <code>?devtools=1</code>.</li>
+        <li>Minimal telemetry (time, allow/deny, platform snapshot) is recorded to improve compatibility; IPs are hashed server‑side.</li>
+        <li>No personal data is collected.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Offline/PWA</h2>
+      <p>A Service Worker pre‑caches the UI and core assets, enabling offline execution when installed to the Home Screen. Icons and pages are updated automatically when online.</p>
+    </div>
+    <div class="card">
+      <h2>Credits</h2>
+      <p>Exploit research and prior work acknowledged in the project README and source headers. This page summarizes the flow at a high level for end users.</p>
+    </div>
+    <p><a href="exploit-compact.html">Back to exploit</a></p>
+  </div>
+  <script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistration&&navigator.serviceWorker.getRegistration().then(function(r){if(!r)navigator.serviceWorker.register('../../sw.js');});}</script>
+</body>
+</html>
+

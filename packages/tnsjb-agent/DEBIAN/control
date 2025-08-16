@@ -1,0 +1,10 @@
+Package: tnsjb-agent
+Name: TNS ReJailbreak Agent
+Version: 0.1.0-1
+Architecture: iphoneos-arm
+Maintainer: TotallyNotSpyware
+Depends: firmware (>= 12.0)
+Description: Local agent for PWA. Provides 127.0.0.1:17385 /ping /rejb /status and registers tnsjb:// URL scheme to open apps by bundle.
+Section: System
+Priority: optional
+
